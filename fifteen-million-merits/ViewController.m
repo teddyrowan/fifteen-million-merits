@@ -17,6 +17,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    UIView *testView = [[UIView alloc] initWithFrame:CGRectMake(50, 100, 100, 100)];
+    testView.backgroundColor = UIColor.greenColor;
+    [self.view addSubview:testView]; // shows up. good. 
 }
 
 
