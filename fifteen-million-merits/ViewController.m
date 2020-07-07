@@ -9,66 +9,44 @@
 #import "ViewController.h"
 
 @interface ViewController ()
-
 @end
-
 
 @implementation ViewController
 @synthesize  rollLabel, pitchLabel, yawLabel, thetaLabel, phiLabel, tiltLabel, advertisement, locationManager, motionManager;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
-    UIView *testView = [[UIView alloc] initWithFrame:CGRectMake(50, 100, 100, 100)];
-    testView.backgroundColor = UIColor.greenColor;
-    [self.view addSubview:testView]; // shows up. good.
+    self.view.backgroundColor = [UIColor colorWithWhite:0.05 alpha:1];
     
-    rollLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 250, 80, 60)];
-    rollLabel.numberOfLines = 2;
-    rollLabel.textAlignment = NSTextAlignmentCenter;
-    rollLabel.backgroundColor = [UIColor colorWithWhite:1 alpha:0.25];
-    rollLabel.text = @"Roll\n0.0";
-    [self.view addSubview:rollLabel];
+    // Moutain Dew Ad
+    advertisement       = [[UIImageView alloc] initWithFrame:CGRectMake(self.view.center.x-150, self.view.center.y-190, 300, 180)];
+    advertisement.image = [UIImage imageNamed:@"mountain-dew.jpg"];
+    [self.view addSubview:advertisement];
     
-    pitchLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 320, 80, 60)];
-    pitchLabel.numberOfLines = 2;
-    pitchLabel.textAlignment = NSTextAlignmentCenter;
-    pitchLabel.backgroundColor = [UIColor colorWithWhite:1 alpha:0.25];
+    // Original accelerometer data
+    rollLabel   = [[AxisLabel alloc] initWithFrame:CGRectMake(0, 350, 80, 60)];
+    pitchLabel  = [[AxisLabel alloc] initWithFrame:CGRectMake(0, 420, 80, 60)];
+    yawLabel    = [[AxisLabel alloc] initWithFrame:CGRectMake(0, 490, 80, 60)];
+    rollLabel.text  = @"Roll\n0.0";
     pitchLabel.text = @"Pitch\n0.0";
+    yawLabel.text   = @"Yaw\n0.0";
+    [self.view addSubview:rollLabel];
     [self.view addSubview:pitchLabel];
-    
-    yawLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 390, 80, 60)];
-    yawLabel.numberOfLines = 2;
-    yawLabel.textAlignment = NSTextAlignmentCenter;
-    yawLabel.backgroundColor = [UIColor colorWithWhite:1 alpha:0.25];
-    yawLabel.text = @"Yaw\n0.0";
     [self.view addSubview:yawLabel];
     
-    
-    
-    thetaLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.view.frame.size.width-80, 250, 80, 60)];
-    thetaLabel.numberOfLines = 2;
-    thetaLabel.textAlignment = NSTextAlignmentCenter;
-    thetaLabel.backgroundColor = [UIColor colorWithWhite:1 alpha:0.25];
-    thetaLabel.text = @"𝛉\n0.0"; //ɸ
+    // Inferred accelerometer data
+    thetaLabel  = [[AxisLabel alloc] initWithFrame:CGRectMake(self.view.frame.size.width-80, 350, 80, 60)];
+    phiLabel    = [[AxisLabel alloc] initWithFrame:CGRectMake(self.view.frame.size.width-80, 420, 80, 60)];
+    tiltLabel   = [[AxisLabel alloc] initWithFrame:CGRectMake(self.view.frame.size.width-80, 490, 80, 60)];
+    thetaLabel.text = @"𝛉\n0.0";
+    phiLabel.text   = @"ɸ\n0.0";
+    tiltLabel.text  = @"Tilt\n0.0";
     [self.view addSubview:thetaLabel];
-    
-    
-    phiLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.view.frame.size.width-80, 320, 80, 60)];
-    phiLabel.numberOfLines = 2;
-    phiLabel.textAlignment = NSTextAlignmentCenter;
-    phiLabel.backgroundColor = [UIColor colorWithWhite:1 alpha:0.25];
-    phiLabel.text = @"ɸ\n0.0";
     [self.view addSubview:phiLabel];
-    
-    tiltLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.view.frame.size.width-80, 390, 80, 60)];
-    tiltLabel.numberOfLines = 2;
-    tiltLabel.textAlignment = NSTextAlignmentCenter;
-    tiltLabel.backgroundColor = [UIColor colorWithWhite:1 alpha:0.25];
-    tiltLabel.text = @"Tilt\n0.0";
     [self.view addSubview:tiltLabel];
     
     
+    // Clean this shit up. 
     
     locationManager = [[CLLocationManager alloc] init];
     locationManager.delegate = (id)self;
