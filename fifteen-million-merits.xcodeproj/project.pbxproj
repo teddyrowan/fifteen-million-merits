@@ -15,13 +15,14 @@
 		2F1E638A24B3DE7A000499C0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2F1E638924B3DE7A000499C0 /* Assets.xcassets */; };
 		2F1E638D24B3DE7A000499C0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2F1E638B24B3DE7A000499C0 /* LaunchScreen.storyboard */; };
 		2F1E639024B3DE7A000499C0 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F1E638F24B3DE7A000499C0 /* main.m */; };
+		2F61051E24B78A5E00DA06F9 /* AdvertisementView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F61051D24B78A5E00DA06F9 /* AdvertisementView.m */; };
 		2F9FACCA24B4350C0066BAAF /* mountain-dew.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 2F9FACC924B4350C0066BAAF /* mountain-dew.jpg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		2F0CB0D924B51AF1005FD3A2 /* AxisLabel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AxisLabel.h; sourceTree = "<group>"; };
 		2F0CB0DA24B51AF1005FD3A2 /* AxisLabel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AxisLabel.m; sourceTree = "<group>"; };
-		2F1E637A24B3DE73000499C0 /* fifteen-million-merits.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "fifteen-million-merits.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2F1E637A24B3DE73000499C0 /* 15mm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = 15mm.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2F1E637D24B3DE73000499C0 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		2F1E637E24B3DE73000499C0 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		2F1E638024B3DE73000499C0 /* SceneDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneDelegate.h; sourceTree = "<group>"; };
@@ -33,6 +34,8 @@
 		2F1E638C24B3DE7A000499C0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2F1E638E24B3DE7A000499C0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2F1E638F24B3DE7A000499C0 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		2F61051C24B78A5E00DA06F9 /* AdvertisementView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AdvertisementView.h; sourceTree = "<group>"; };
+		2F61051D24B78A5E00DA06F9 /* AdvertisementView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AdvertisementView.m; sourceTree = "<group>"; };
 		2F9FACC924B4350C0066BAAF /* mountain-dew.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "mountain-dew.jpg"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -58,7 +61,7 @@
 		2F1E637B24B3DE73000499C0 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				2F1E637A24B3DE73000499C0 /* fifteen-million-merits.app */,
+				2F1E637A24B3DE73000499C0 /* 15mm.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -70,6 +73,8 @@
 				2F1E637E24B3DE73000499C0 /* AppDelegate.m */,
 				2F1E638024B3DE73000499C0 /* SceneDelegate.h */,
 				2F1E638124B3DE73000499C0 /* SceneDelegate.m */,
+				2F61051C24B78A5E00DA06F9 /* AdvertisementView.h */,
+				2F61051D24B78A5E00DA06F9 /* AdvertisementView.m */,
 				2F0CB0D924B51AF1005FD3A2 /* AxisLabel.h */,
 				2F0CB0DA24B51AF1005FD3A2 /* AxisLabel.m */,
 				2F1E638324B3DE73000499C0 /* ViewController.h */,
@@ -101,7 +106,7 @@
 			);
 			name = "fifteen-million-merits";
 			productName = "fifteen-million-merits";
-			productReference = 2F1E637A24B3DE73000499C0 /* fifteen-million-merits.app */;
+			productReference = 2F1E637A24B3DE73000499C0 /* 15mm.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -159,6 +164,7 @@
 				2F1E637F24B3DE73000499C0 /* AppDelegate.m in Sources */,
 				2F0CB0DB24B51AF1005FD3A2 /* AxisLabel.m in Sources */,
 				2F1E639024B3DE7A000499C0 /* main.m in Sources */,
+				2F61051E24B78A5E00DA06F9 /* AdvertisementView.m in Sources */,
 				2F1E638224B3DE73000499C0 /* SceneDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -307,8 +313,8 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.edwardrowan.fifteen-million-merits";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TARGETED_DEVICE_FAMILY = "1,2";
+				PRODUCT_NAME = 15mm;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -324,8 +330,8 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.edwardrowan.fifteen-million-merits";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TARGETED_DEVICE_FAMILY = "1,2";
+				PRODUCT_NAME = 15mm;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

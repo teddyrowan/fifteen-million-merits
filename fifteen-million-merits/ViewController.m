@@ -19,9 +19,9 @@
     self.view.backgroundColor = [UIColor colorWithWhite:0.05 alpha:1];
     
     // Attitude accelerometer data
-    rollLabel   = [[AxisLabel alloc] initWithFrame:CGRectMake(0, 350, 80, 60)];
-    pitchLabel  = [[AxisLabel alloc] initWithFrame:CGRectMake(0, 420, 80, 60)];
-    yawLabel    = [[AxisLabel alloc] initWithFrame:CGRectMake(0, 490, 80, 60)];
+    rollLabel   = [[AxisLabel alloc] initWithFrame:CGRectMake(0, 350, 60, 45)];
+    pitchLabel  = [[AxisLabel alloc] initWithFrame:CGRectMake(0, 410, 60, 45)];
+    yawLabel    = [[AxisLabel alloc] initWithFrame:CGRectMake(0, 470, 60, 45)];
     rollLabel.text  = @"Roll\n0.0";
     pitchLabel.text = @"Pitch\n0.0";
     yawLabel.text   = @"Yaw\n0.0";
@@ -30,9 +30,9 @@
     [self.view addSubview:yawLabel];
     
     // Spherical coordinates accelerometer data
-    thetaLabel  = [[AxisLabel alloc] initWithFrame:CGRectMake(self.view.frame.size.width-80, 350, 80, 60)];
-    phiLabel    = [[AxisLabel alloc] initWithFrame:CGRectMake(self.view.frame.size.width-80, 420, 80, 60)];
-    tiltLabel   = [[AxisLabel alloc] initWithFrame:CGRectMake(self.view.frame.size.width-80, 490, 80, 60)];
+    thetaLabel  = [[AxisLabel alloc] initWithFrame:CGRectMake(self.view.frame.size.width-60, 350, 60, 45)];
+    phiLabel    = [[AxisLabel alloc] initWithFrame:CGRectMake(self.view.frame.size.width-60, 410, 60, 45)];
+    tiltLabel   = [[AxisLabel alloc] initWithFrame:CGRectMake(self.view.frame.size.width-60, 470, 60, 45)];
     thetaLabel.text = @"𝛉\n0.0";
     phiLabel.text   = @"ɸ\n0.0";
     tiltLabel.text  = @"Tilt\n0.0";
@@ -78,22 +78,11 @@
 
 // Helper function for now, change to a custom class soon
 - (void) loadAdvertisement{
-    // Moutain Dew Ad -- replace w/ mountain dew advertisement video.
-    advertisement       = [[UIImageView alloc] initWithFrame:CGRectMake(self.view.center.x-150, self.view.center.y-190, 300, 180)];
-    advertisement.image = [UIImage imageNamed:@"mountain-dew.jpg"];
-    [self.view addSubview:advertisement];
     
-    UILabel *timerLabel = [[UILabel alloc] initWithFrame:CGRectMake(advertisement.frame.size.width-20, 0, 20, 20)];
-    timerLabel.backgroundColor      = [UIColor colorWithWhite:0.10 alpha:0.25];
-    timerLabel.text                 = @"10";
-    timerLabel.layer.borderColor    = UIColor.blackColor.CGColor;
-    timerLabel.layer.borderWidth    = 1;
-    timerLabel.layer.cornerRadius   = 10;
-    timerLabel.clipsToBounds        = YES;
-    timerLabel.font                 = [UIFont systemFontOfSize:12];
-    timerLabel.textColor            = UIColor.blackColor;
-    timerLabel.textAlignment        = NSTextAlignmentCenter;
-    [advertisement addSubview:timerLabel];
+    // Moutain Dew Ad -- replace w/ mountain dew advertisement video.
+    advertisement = [[AdvertisementView alloc] initWithFrame:CGRectMake(self.view.center.x-150, self.view.center.y-190, 300, 180)];
+    advertisement.adImageView.image = [UIImage imageNamed:@"mountain-dew.jpg"];
+    [self.view addSubview:advertisement];
     
     // NSTimer w/ 1 second period. drop down the time on the timerLabel by one second.
     // advertisement class needs a counter as well as the timerLabel to be accessable to change the value.
@@ -112,7 +101,7 @@
 }
 
 
-- (void) updateRollPitchYaw{
+- (NSDictionary*) updateRollPitchYaw{
     rollLabel.text  = [NSString stringWithFormat:@"Roll\n%.2f", motionManager.deviceMotion.attitude.roll];
     pitchLabel.text = [NSString stringWithFormat:@"Pitch\n%.2f", motionManager.deviceMotion.attitude.pitch];
     yawLabel.text   = [NSString stringWithFormat:@"Yaw\n%.2f", motionManager.deviceMotion.attitude.yaw];
@@ -128,14 +117,24 @@
     double Sz = atan2(mat.m21, mat.m11);                                        // Tilt
     
     // Relative coordinates. Absolute doesn't matter anymore.
-    thetaLabel.text     = [NSString stringWithFormat:@"𝛉\n%.2f°", Sy*180/M_PI];
     phiLabel.text       = [NSString stringWithFormat:@"ɸ\n%.2f°", Sx*180/M_PI];
+    thetaLabel.text     = [NSString stringWithFormat:@"𝛉\n%.2f°", Sy*180/M_PI];
     tiltLabel.text      = [NSString stringWithFormat:@"Tilt\n%.2f°", Sz*180/M_PI];
     
+    // Actually this is a bad way to do it since this is constantly getting called by the NSTimer that handles display.
+    // Need to move this outside or create a second version of it (this). 
+    NSMutableDictionary *output = [[NSMutableDictionary alloc] init];
+    [output setObject:[NSNumber numberWithDouble:motionManager.deviceMotion.attitude.pitch] forKey:@"pitch"];
+    [output setObject:[NSNumber numberWithDouble:motionManager.deviceMotion.attitude.roll] forKey:@"roll"];
+    [output setObject:[NSNumber numberWithDouble:motionManager.deviceMotion.attitude.yaw] forKey:@"yaw"];
+    [output setObject:[NSNumber numberWithDouble:(Sx*180/M_PI)] forKey:@"phi"];
+    [output setObject:[NSNumber numberWithDouble:(Sy*180/M_PI)] forKey:@"theta"];
+    [output setObject:[NSNumber numberWithDouble:(Sz*180/M_PI)] forKey:@"tilt"];
+    return output;
 }
 
 // compare the current phone orientation to the one when the ad started playing. 
 //- (bool) checkWatchStatus.
-
+// pitchLimit ~ 0.50 pitch constrained and continuous from -pi/2 to pi/2 n
 
 @end
