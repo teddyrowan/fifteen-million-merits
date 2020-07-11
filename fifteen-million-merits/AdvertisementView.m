@@ -16,6 +16,7 @@
     int capture_attempts;
     
     CMMotionManager     *motionManager;
+    UIImageView *obstructed_view;
     
     // tech-demo variables
     AxisLabel *rollLabel, *pitchLabel, *yawLabel;         // aircraft principal axes
@@ -24,6 +25,7 @@
 @property (nonatomic) int time_remaining, capture_attempts;
 @property (nonatomic) bool is_paused;
 @property (nonatomic, strong) CMMotionManager *motionManager;
+@property (nonatomic, strong) UIImageView *obstructed_view;
 
 @property (nonatomic, strong) AxisLabel *rollLabel, *pitchLabel, *yawLabel;         // aircraft principal axes
 @property (nonatomic, strong) AxisLabel *thetaLabel, *phiLabel, *tiltLabel;         // spherical coordinate sc
@@ -31,7 +33,7 @@
 
 @implementation AdvertisementView
 @synthesize adImageView, timerLabel, time_remaining, ad_duration, phi_0, pitch_0, theta_0, yaw_0, tilt_0, roll_0, is_paused, techDemo;
-@synthesize rollLabel, pitchLabel, yawLabel, thetaLabel, phiLabel, tiltLabel, motionManager, capture_attempts;;
+@synthesize rollLabel, pitchLabel, yawLabel, thetaLabel, phiLabel, tiltLabel, motionManager, capture_attempts, obstructed_view;
 
 - (id) initWithFrame:(CGRect)frame{
     self = [super initWithFrame:frame];
@@ -39,8 +41,7 @@
         adImageView = [[UIImageView alloc] initWithFrame:CGRectMake(self.center.x-150, self.center.y-190, 300, 180)];
         [self addSubview:adImageView];
         
-        // Manager for the orientation detection -- motionManager needs to get moved into the advertisementView
-        // This takes about 0.2s to initialize so call it earlier than later.
+        // Manager for the orientation detection. This takes about 0.2s to initialize so call it earlier than later.
         motionManager = [[CMMotionManager alloc] init];
         if (motionManager.deviceMotionAvailable) {
             motionManager.deviceMotionUpdateInterval = 1.0/70.0;
@@ -48,7 +49,7 @@
         } // else {this is the whole point of the demo, so we doneskies. for framework move this to the start and pop exit out.}
         
         
-        ad_duration = 5;
+        ad_duration = 10;
         is_paused = NO;
         capture_attempts = 0;
         
@@ -68,6 +69,8 @@
         timerLabel.textAlignment        = NSTextAlignmentCenter;
         [adImageView addSubview:timerLabel];
         
+        [self loadObstructedView];
+        
         
         // Timer to update the heading labels.
         NSTimer *labelTimer = [[NSTimer alloc] init];
@@ -78,6 +81,27 @@
                                                      repeats:YES];
     }
     return self;
+}
+
+// View for when the user is not looking at the view
+- (void) loadObstructedView{
+    obstructed_view = [[UIImageView alloc] initWithFrame:self.bounds];
+    obstructed_view.image = [UIImage imageNamed:@"blocked_view.png"];
+    [obstructed_view setHidden:YES];
+    [self addSubview:obstructed_view];
+    
+    UILabel *resumeLabel = [[UILabel alloc] initWithFrame:CGRectMake(75, 200, self.frame.size.width-150, 80)];
+    resumeLabel.text = @"RESUME VIEWING";
+    resumeLabel.font = [UIFont boldSystemFontOfSize:16];
+    resumeLabel.alpha = 0.85;
+    resumeLabel.clipsToBounds = YES;
+    resumeLabel.textAlignment = NSTextAlignmentCenter;
+    resumeLabel.textColor = UIColor.whiteColor;
+    resumeLabel.layer.cornerRadius = 10;
+    resumeLabel.layer.borderColor = [UIColor colorWithWhite:1 alpha:0.75].CGColor;
+    resumeLabel.layer.borderWidth = 3;
+    resumeLabel.backgroundColor = [UIColor colorWithRed:1.0 green:0.5 blue:0.66 alpha:0.80];
+    [obstructed_view addSubview:resumeLabel];
 }
 
 - (void) techDemoSetup{
@@ -217,44 +241,33 @@
 
 // Check whether the user is still looking at the screen
 - (bool) checkUserParticipation:(NSDictionary*)currentHeadings{
-    double pitchLimit = 0.35;   // basic 0.35   || strict 0.2
-    double thetaLimit = 45;     // basic 45     || strict 25 degrees
-    // might be able to use phi to check between turn of phone vs person rollover.
-    // i think i actually want to look at phi instead of pitch. 
+    //double pitchLimit = 0.35;   // basic 0.35   || strict 0.2 // using phi instead of pitch for now.
+    double thetaLimit = 40;     // basic 45     || strict 25 degrees
+    double phiLimit = 30;       // basic 35     || strict 20 degrees
     
     is_paused = NO;
     
-    if (fabs([[currentHeadings objectForKey:@"pitch"] doubleValue] - pitch_0) > pitchLimit){
-        NSLog(@"maximum pitch exceeded:: pitch_0: %.2f  || pitch: %.2f", pitch_0, [[currentHeadings objectForKey:@"pitch"] doubleValue]);
-        is_paused = YES;
-        
-        /*
-        UIImageView *testBlock = [[UIImageView alloc] initWithFrame:CGRectMake(-100, -150, 600, 800)];
-        testBlock.image = [UIImage imageNamed:@"blocked_view.png"];
-        [self addSubview:testBlock];
-        
-        UILabel *resumeLabel = [[UILabel alloc] initWithFrame:CGRectMake(50, 50, self.frame.size.width-100, self.frame.size.height-100)];
-        resumeLabel.text = @"RESUME VIEWING";
-        resumeLabel.font = [UIFont boldSystemFontOfSize:16];
-        resumeLabel.alpha = 0.85;
-        resumeLabel.clipsToBounds = YES;
-        resumeLabel.textAlignment = NSTextAlignmentCenter;
-        resumeLabel.textColor = UIColor.whiteColor;
-        resumeLabel.layer.cornerRadius = 10;
-        resumeLabel.layer.borderColor = [UIColor colorWithWhite:1 alpha:0.75].CGColor;
-        resumeLabel.layer.borderWidth = 3;
-        resumeLabel.backgroundColor = [UIColor colorWithRed:1.0 green:0.5 blue:0.66 alpha:0.80];
-        [self addSubview:resumeLabel];
-        */
-        
-        return NO;
+    // If the user has watched all the mandatory ad then their participation is no longer required.
+    if (!time_remaining){
+        [obstructed_view setHidden:YES];
+        return YES;
     }
-    if (fabs([[currentHeadings objectForKey:@"theta"] doubleValue] - theta_0) > thetaLimit){
-        NSLog(@"maximum theta exceeded:: theta_0: %.2f  || theta: %.2f", theta_0, [[currentHeadings objectForKey:@"theta"] doubleValue]);
+    
+    if (fabs([[currentHeadings objectForKey:@"phi"] doubleValue] - phi_0) > phiLimit){
+        NSLog(@"maximum phi exceeded:: phi_0: %.2f  || phi: %.2f", phi_0, [[currentHeadings objectForKey:@"phi"] doubleValue]);
         is_paused = YES;
+        [obstructed_view setHidden:NO];
         return NO;
     }
     
+    if (fabs([[currentHeadings objectForKey:@"theta"] doubleValue] - theta_0) > thetaLimit){
+        NSLog(@"maximum theta exceeded:: theta_0: %.2f  || theta: %.2f", theta_0, [[currentHeadings objectForKey:@"theta"] doubleValue]);
+        is_paused = YES;
+        [obstructed_view setHidden:NO];
+        return NO;
+    }
+    
+    [obstructed_view setHidden:YES];
     return YES;
 }
 
