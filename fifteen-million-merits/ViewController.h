@@ -12,14 +12,6 @@
 #import "AdvertisementView.h"
 
 @interface ViewController : UIViewController
-{
-    AdvertisementView   *advertisement;
-    CMMotionManager     *motionManager;
-}
-
-@property (nonatomic, strong) AdvertisementView *advertisement;
-@property (nonatomic, strong) CMMotionManager *motionManager;
-
 
 @end
 

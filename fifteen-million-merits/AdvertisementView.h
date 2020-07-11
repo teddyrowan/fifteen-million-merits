@@ -20,6 +20,9 @@ NS_ASSUME_NONNULL_BEGIN
     // Variables for tracking relative movement
     double pitch_0, roll_0, yaw_0;
     double theta_0, phi_0, tilt_0;
+    
+    // App Demo variables
+    bool techDemo;      // pop labels that show the pitch-roll-yaw-theta-phi-tilt
 }
 
 @property (nonatomic, strong) UIImageView *adImageView;
@@ -27,9 +30,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) int ad_duration;
 @property (nonatomic) double pitch_0, roll_0, yaw_0, theta_0, phi_0, tilt_0;
 
-- (void) capture_0:(NSDictionary*)headingDict;
+@property (nonatomic) bool techDemo;
+
+- (void) capture_0;
+
 - (bool) checkUserParticipation:(NSDictionary*)currentHeadings;
 - (void) startTimer;
+
+- (void) setTechDemo:(bool)on_status;
 
 @end
 
