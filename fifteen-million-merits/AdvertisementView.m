@@ -97,11 +97,30 @@
     double pitchLimit = 0.35;   // basic 0.35   || strict 0.2
     double thetaLimit = 45;     // basic 45     || strict 25 degrees
     // might be able to use phi to check between turn of phone vs person rollover.
+    // i think i actually want to look at phi instead of pitch. 
+    
     is_paused = NO;
     
     if (fabs([[currentHeadings objectForKey:@"pitch"] doubleValue] - pitch_0) > pitchLimit){
         NSLog(@"maximum pitch exceeded");
         is_paused = YES;
+        UIImageView *testBlock = [[UIImageView alloc] initWithFrame:CGRectMake(-100, -150, 600, 800)];
+        testBlock.image = [UIImage imageNamed:@"blocked_view.png"];
+        [self addSubview:testBlock];
+        
+        UILabel *resumeLabel = [[UILabel alloc] initWithFrame:CGRectMake(50, 50, self.frame.size.width-100, self.frame.size.height-100)];
+        resumeLabel.text = @"RESUME VIEWING";
+        resumeLabel.font = [UIFont boldSystemFontOfSize:16];
+        resumeLabel.alpha = 0.85;
+        resumeLabel.clipsToBounds = YES;
+        resumeLabel.textAlignment = NSTextAlignmentCenter;
+        resumeLabel.textColor = UIColor.whiteColor;
+        resumeLabel.layer.cornerRadius = 10;
+        resumeLabel.layer.borderColor = [UIColor colorWithWhite:1 alpha:0.75].CGColor;
+        resumeLabel.layer.borderWidth = 3;
+        resumeLabel.backgroundColor = [UIColor colorWithRed:1.0 green:0.5 blue:0.66 alpha:0.80];
+        [self addSubview:resumeLabel];
+        
         return NO;
     }
     if (fabs([[currentHeadings objectForKey:@"theta"] doubleValue] - theta_0) > thetaLimit){

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2F0CB0DB24B51AF1005FD3A2 /* AxisLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F0CB0DA24B51AF1005FD3A2 /* AxisLabel.m */; };
+		2F15476224B99062006E879A /* blocked_view.png in Resources */ = {isa = PBXBuildFile; fileRef = 2F15476124B99062006E879A /* blocked_view.png */; };
 		2F1E637F24B3DE73000499C0 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F1E637E24B3DE73000499C0 /* AppDelegate.m */; };
 		2F1E638224B3DE73000499C0 /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F1E638124B3DE73000499C0 /* SceneDelegate.m */; };
 		2F1E638524B3DE73000499C0 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F1E638424B3DE73000499C0 /* ViewController.m */; };
@@ -22,6 +23,7 @@
 /* Begin PBXFileReference section */
 		2F0CB0D924B51AF1005FD3A2 /* AxisLabel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AxisLabel.h; sourceTree = "<group>"; };
 		2F0CB0DA24B51AF1005FD3A2 /* AxisLabel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AxisLabel.m; sourceTree = "<group>"; };
+		2F15476124B99062006E879A /* blocked_view.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blocked_view.png; sourceTree = "<group>"; };
 		2F1E637A24B3DE73000499C0 /* 15mm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = 15mm.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2F1E637D24B3DE73000499C0 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		2F1E637E24B3DE73000499C0 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -84,6 +86,7 @@
 				2F1E638B24B3DE7A000499C0 /* LaunchScreen.storyboard */,
 				2F1E638E24B3DE7A000499C0 /* Info.plist */,
 				2F1E638F24B3DE7A000499C0 /* main.m */,
+				2F15476124B99062006E879A /* blocked_view.png */,
 				2F9FACC924B4350C0066BAAF /* mountain-dew.jpg */,
 			);
 			path = "fifteen-million-merits";
@@ -149,6 +152,7 @@
 				2F1E638D24B3DE7A000499C0 /* LaunchScreen.storyboard in Resources */,
 				2F1E638A24B3DE7A000499C0 /* Assets.xcassets in Resources */,
 				2F1E638824B3DE73000499C0 /* Main.storyboard in Resources */,
+				2F15476224B99062006E879A /* blocked_view.png in Resources */,
 				2F9FACCA24B4350C0066BAAF /* mountain-dew.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
