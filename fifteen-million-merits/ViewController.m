@@ -7,12 +7,19 @@
 //
 
 #import "ViewController.h"
+#import "AxisLabel.h"
 
-@interface ViewController ()
+@interface ViewController (){
+    AxisLabel *rollLabel, *pitchLabel, *yawLabel;         // aircraft principal axes
+    AxisLabel *thetaLabel, *phiLabel, *tiltLabel;         // spherical coordinate scheme
+}
+
+@property (nonatomic, strong) AxisLabel *rollLabel, *pitchLabel, *yawLabel;         // aircraft principal axes
+@property (nonatomic, strong) AxisLabel *thetaLabel, *phiLabel, *tiltLabel;         // spherical coordinate scheme
 @end
 
 @implementation ViewController
-@synthesize  rollLabel, pitchLabel, yawLabel, thetaLabel, phiLabel, tiltLabel, advertisement, locationManager, motionManager;
+@synthesize  rollLabel, pitchLabel, yawLabel, thetaLabel, phiLabel, tiltLabel, advertisement, motionManager;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -40,7 +47,8 @@
     [self.view addSubview:phiLabel];
     [self.view addSubview:tiltLabel];
     
-    // Testing button to pop the advertisement -- add a gradient or something. highlight on click.
+    
+    // For tech demo. Testing button to pop the advertisement -- add a gradient or something. highlight on click.
     UIButton *popAdButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.center.x-100, 580, 200, 60)];
     [popAdButton setTitle:@"Test Advertisement" forState:UIControlStateNormal];
     popAdButton.backgroundColor     = [UIColor colorWithWhite:0.10 alpha:1.0];
@@ -50,63 +58,56 @@
     [popAdButton addTarget:self action:@selector(loadAdvertisement) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:popAdButton];
     
-    
-    
-    // Clean up everything below this.
-    locationManager = [[CLLocationManager alloc] init];
-    locationManager.delegate = (id)self;
-    locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation;
-    
-    if([locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]){
-        [locationManager requestWhenInUseAuthorization];
-    }
-    
-    [locationManager startUpdatingHeading];
-    
-    
+    // Manager for the orientation detection -- motionManager needs to get moved into the advertisementView
     motionManager = [[CMMotionManager alloc] init];
     if (motionManager.deviceMotionAvailable) {
         motionManager.deviceMotionUpdateInterval = 1.0/70.0;
         [motionManager startDeviceMotionUpdates];
-        NSLog(@"ARViewController :: startSession :: Device Motion Manager Started");
-    }
+    } // else {this is the whole point of the demo, so we doneskies. for framework move this to the start and pop exit out.}
     
-    // Timer to update the labels.
-    NSTimer *myTimer = [[NSTimer alloc] init];
-    myTimer = [NSTimer scheduledTimerWithTimeInterval:1.0/30.0 target:self selector:@selector(updateRollPitchYaw) userInfo:nil repeats:YES];
+    // Timer to update the heading labels.
+    NSTimer *labelTimer = [[NSTimer alloc] init];
+    labelTimer = [NSTimer scheduledTimerWithTimeInterval:1.0/30.0
+                                                  target:self
+                                                selector:@selector(updateHeadingLabels)
+                                                userInfo:nil
+                                                 repeats:YES];
 }
 
-// Helper function for now, change to a custom class soon
+// Load up whatever advertisement you choose.
 - (void) loadAdvertisement{
-    
     // Moutain Dew Ad -- replace w/ mountain dew advertisement video.
     advertisement = [[AdvertisementView alloc] initWithFrame:CGRectMake(self.view.center.x-150, self.view.center.y-190, 300, 180)];
     advertisement.adImageView.image = [UIImage imageNamed:@"mountain-dew.jpg"];
+    [advertisement capture_0:[self extrapolateHeadings:motionManager]];
     [self.view addSubview:advertisement];
-    
-    // NSTimer w/ 1 second period. drop down the time on the timerLabel by one second.
-    // advertisement class needs a counter as well as the timerLabel to be accessable to change the value.
-    // When counter hits zero cancel the timer, hide the label, and replace it with a button.
-    // well actually the timerLabel should just be a button to begin with.
 }
 
-- (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(nonnull CLHeading *)newHeading{
-    double aa = newHeading.magneticHeading;
-    NSLog(@"heading: %.2f", aa);
+// Update the labels on the sides for the tech demo. the logic for this only makes sense if the headings only show during the ad. 
+- (void) updateHeadingLabels{
+    NSDictionary *headings = [self extrapolateHeadings:motionManager];
+    bool isParticipating = [advertisement checkUserParticipation:headings];
+    if (!isParticipating){
+        NSLog(@"user not watching the ad");
+    }
     
-    // Need to save this as an offset wrt theta / yaw.
-    //directionOffsetRad = -newHeading.magneticHeading*M_PI/180;
+    rollLabel.text      = [NSString stringWithFormat:@"Roll\n%.2f", [[headings objectForKey:@"roll"] doubleValue]];
+    pitchLabel.text     = [NSString stringWithFormat:@"Pitch\n%.2f", [[headings objectForKey:@"pitch"] doubleValue]];
+    yawLabel.text       = [NSString stringWithFormat:@"Yaw\n%.2f", [[headings objectForKey:@"yaw"] doubleValue]];
     
-    [self.locationManager stopUpdatingHeading];
+    phiLabel.text       = [NSString stringWithFormat:@"ɸ\n%.2f", [[headings objectForKey:@"phi"] doubleValue]];
+    thetaLabel.text     = [NSString stringWithFormat:@"𝛉\n%.2f", [[headings objectForKey:@"theta"] doubleValue]];
+    tiltLabel.text      = [NSString stringWithFormat:@"Tilt\n%.2f°", [[headings objectForKey:@"tilt"] doubleValue]];
 }
 
-
-- (NSDictionary*) updateRollPitchYaw{
-    rollLabel.text  = [NSString stringWithFormat:@"Roll\n%.2f", motionManager.deviceMotion.attitude.roll];
-    pitchLabel.text = [NSString stringWithFormat:@"Pitch\n%.2f", motionManager.deviceMotion.attitude.pitch];
-    yawLabel.text   = [NSString stringWithFormat:@"Yaw\n%.2f", motionManager.deviceMotion.attitude.yaw];
-        
-    CMRotationMatrix mat = motionManager.deviceMotion.attitude.rotationMatrix;
+// Calculate all the heading information for the six directions and return them as a dictionary.
+- (NSDictionary*) extrapolateHeadings:(CMMotionManager*)manager{
+    NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
+    [dict setObject:[NSNumber numberWithDouble:manager.deviceMotion.attitude.pitch] forKey:@"pitch"];
+    [dict setObject:[NSNumber numberWithDouble:manager.deviceMotion.attitude.roll] forKey:@"roll"];
+    [dict setObject:[NSNumber numberWithDouble:manager.deviceMotion.attitude.yaw] forKey:@"yaw"];
+    
+    CMRotationMatrix mat = manager.deviceMotion.attitude.rotationMatrix;
     // http://nghiaho.com/?page_id=846 // info on decomposing rotation matrices
     //NSLog(@"m11, m12, m13 : %.2f, %.2f, %.2f", mat.m11, mat.m12, mat.m13);
     //NSLog(@"m21, m22, m23 : %.2f, %.2f, %.2f", mat.m21, mat.m22, mat.m23);
@@ -116,25 +117,23 @@
     double Sy = atan2(-mat.m31, sqrt(mat.m32*mat.m32 + mat.m33*mat.m33));       // Theta
     double Sz = atan2(mat.m21, mat.m11);                                        // Tilt
     
-    // Relative coordinates. Absolute doesn't matter anymore.
-    phiLabel.text       = [NSString stringWithFormat:@"ɸ\n%.2f°", Sx*180/M_PI];
-    thetaLabel.text     = [NSString stringWithFormat:@"𝛉\n%.2f°", Sy*180/M_PI];
-    tiltLabel.text      = [NSString stringWithFormat:@"Tilt\n%.2f°", Sz*180/M_PI];
+    [dict setObject:[NSNumber numberWithDouble:(Sx*180/M_PI)] forKey:@"phi"];
+    [dict setObject:[NSNumber numberWithDouble:(Sy*180/M_PI)] forKey:@"theta"];
+    [dict setObject:[NSNumber numberWithDouble:(Sz*180/M_PI)] forKey:@"tilt"];
     
-    // Actually this is a bad way to do it since this is constantly getting called by the NSTimer that handles display.
-    // Need to move this outside or create a second version of it (this). 
-    NSMutableDictionary *output = [[NSMutableDictionary alloc] init];
-    [output setObject:[NSNumber numberWithDouble:motionManager.deviceMotion.attitude.pitch] forKey:@"pitch"];
-    [output setObject:[NSNumber numberWithDouble:motionManager.deviceMotion.attitude.roll] forKey:@"roll"];
-    [output setObject:[NSNumber numberWithDouble:motionManager.deviceMotion.attitude.yaw] forKey:@"yaw"];
-    [output setObject:[NSNumber numberWithDouble:(Sx*180/M_PI)] forKey:@"phi"];
-    [output setObject:[NSNumber numberWithDouble:(Sy*180/M_PI)] forKey:@"theta"];
-    [output setObject:[NSNumber numberWithDouble:(Sz*180/M_PI)] forKey:@"tilt"];
-    return output;
+    return dict;
 }
+
 
 // compare the current phone orientation to the one when the ad started playing. 
 //- (bool) checkWatchStatus.
-// pitchLimit ~ 0.50 pitch constrained and continuous from -pi/2 to pi/2 n
+// pitchLimit ~ 0.35 pitch constrained and continuous from -pi/2 to pi/2 n
+// thetaLimit ~ 45degrees
+//
+// and then strict settings:
+// pitchLimit ~ 0.20
+// thetaLimit ~ 25degrees
+
+// might be able to use phi to check between turn of phone vs person rollover. 
 
 @end

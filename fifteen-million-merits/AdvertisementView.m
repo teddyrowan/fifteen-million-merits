@@ -74,4 +74,31 @@
     roll_0  = [[headingDict objectForKey:@"roll"] doubleValue];
 }
 
+// Check whether the user is still looking at the screen
+- (bool) checkUserParticipation:(NSDictionary*)currentHeadings{
+    double pitchLimit = 0.35;
+    double thetaLimit = 45;
+    
+    if (fabs([[currentHeadings objectForKey:@"pitch"] doubleValue] - pitch_0) > pitchLimit){
+        NSLog(@"maximum pitch exceeded");
+        return NO;
+    }
+    if (fabs([[currentHeadings objectForKey:@"theta"] doubleValue] - theta_0) > thetaLimit){
+        NSLog(@"maximum theta exceeded");
+        return NO;
+    }
+    
+    
+    return YES;
+}
+
+// pitchLimit ~ 0.35 pitch constrained and continuous from -pi/2 to pi/2
+// thetaLimit ~ 45degrees constrained and continuous from -90 to 90 degrees
+//
+// and then strict settings:
+// pitchLimit ~ 0.20
+// thetaLimit ~ 25degrees
+
+// might be able to use phi to check between turn of phone vs person rollover.
+
 @end

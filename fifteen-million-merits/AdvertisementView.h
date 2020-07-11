@@ -28,6 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) double pitch_0, roll_0, yaw_0, theta_0, phi_0, tilt_0;
 
 - (void) capture_0:(NSDictionary*)headingDict;
+- (bool) checkUserParticipation:(NSDictionary*)currentHeadings;
 
 @end
 
