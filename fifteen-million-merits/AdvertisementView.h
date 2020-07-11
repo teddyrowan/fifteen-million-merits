@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
     UIImageView *adImageView;
     UILabel *timerLabel;
     
-    int timeRemaining;
+    int ad_duration;
     
     // Variables for tracking relative movement
     double pitch_0, roll_0, yaw_0;
@@ -24,11 +24,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) UIImageView *adImageView;
 @property (nonatomic, strong) UILabel *timerLabel;
-@property (nonatomic) int timeRemaining;
+@property (nonatomic) int ad_duration;
 @property (nonatomic) double pitch_0, roll_0, yaw_0, theta_0, phi_0, tilt_0;
 
 - (void) capture_0:(NSDictionary*)headingDict;
 - (bool) checkUserParticipation:(NSDictionary*)currentHeadings;
+- (void) startTimer;
 
 @end
 

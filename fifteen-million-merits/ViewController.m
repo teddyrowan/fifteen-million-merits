@@ -81,6 +81,7 @@
     advertisement.adImageView.image = [UIImage imageNamed:@"mountain-dew.jpg"];
     [advertisement capture_0:[self extrapolateHeadings:motionManager]];
     [self.view addSubview:advertisement];
+    [advertisement startTimer];
 }
 
 // Update the labels on the sides for the tech demo. the logic for this only makes sense if the headings only show during the ad. 
@@ -123,17 +124,5 @@
     
     return dict;
 }
-
-
-// compare the current phone orientation to the one when the ad started playing. 
-//- (bool) checkWatchStatus.
-// pitchLimit ~ 0.35 pitch constrained and continuous from -pi/2 to pi/2 n
-// thetaLimit ~ 45degrees
-//
-// and then strict settings:
-// pitchLimit ~ 0.20
-// thetaLimit ~ 25degrees
-
-// might be able to use phi to check between turn of phone vs person rollover. 
 
 @end
