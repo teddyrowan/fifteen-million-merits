@@ -18,24 +18,30 @@
     AVAudioPlayer       *audioPlayer;           // play a noise (resume_viewing.mp3) whenever view is obstructed
     CMMotionManager     *motionManager;         // capture the accelerometer data
     UIImageView         *obstructed_view;       // view to hide the whole screen and alert the user
+    UILabel *timerLabel;                        // label that counts down the ad time remaining
+    
+    double pitch_0, roll_0, yaw_0;              // initial values for principal aircraft coordinates
+    double theta_0, phi_0, tilt_0;              // initial values for spherical coordinates
     
     // tech-demo variables
     UILabel *rollLabel, *pitchLabel, *yawLabel;         // aircraft principal axes
     UILabel *thetaLabel, *phiLabel, *tiltLabel;         // spherical coordinate scheme
 }
 @property (nonatomic) bool is_paused;
+@property (nonatomic) double pitch_0, roll_0, yaw_0, theta_0, phi_0, tilt_0;
 @property (nonatomic) int time_remaining, capture_attempts;
 @property (strong) AVAudioPlayer *audioPlayer;
 @property (nonatomic, strong) CMMotionManager *motionManager;
 @property (nonatomic, strong) UIImageView *obstructed_view;
-@property (nonatomic, strong) UILabel *rollLabel, *pitchLabel, *yawLabel;         // aircraft principal axes
-@property (nonatomic, strong) UILabel *thetaLabel, *phiLabel, *tiltLabel;         // spherical coordinate axes
+@property (nonatomic, strong) UILabel *timerLabel, *rollLabel, *pitchLabel, *yawLabel, *thetaLabel, *phiLabel, *tiltLabel;
 @end
 
 @implementation AdvertisementView
 @synthesize adImageView, timerLabel, time_remaining, ad_duration, phi_0, pitch_0, theta_0, yaw_0, tilt_0, roll_0, is_paused, techDemo;
 @synthesize rollLabel, pitchLabel, yawLabel, thetaLabel, phiLabel, tiltLabel, motionManager, capture_attempts, obstructed_view;
 @synthesize audioPlayer;
+
+#pragma mark - Initialization and Essential Loading Methods
 
 - (id) initWithFrame:(CGRect)frame{
     self = [super initWithFrame:frame];
@@ -50,47 +56,41 @@
             [motionManager startDeviceMotionUpdates];
         } // else {this is the whole point of the demo, so we doneskies. for framework move this to the start and pop exit out.}
         
-        
-        ad_duration = 10;
+        ad_duration = 10; // default duration. 
         is_paused = NO;
         capture_attempts = 0;
         
         [self techDemoSetup];
-        [self setTechDemo:NO];
         [self capture_0];
-        
-        timerLabel = [[UILabel alloc] initWithFrame:CGRectMake(adImageView.frame.size.width-20, 0, 20, 20)];
-        timerLabel.backgroundColor      = [UIColor colorWithWhite:0.10 alpha:0.15];
-        timerLabel.text                 = [NSString stringWithFormat:@"%d", ad_duration];
-        timerLabel.layer.borderColor    = UIColor.blackColor.CGColor;
-        timerLabel.layer.borderWidth    = 1;
-        timerLabel.layer.cornerRadius   = 10;
-        timerLabel.clipsToBounds        = YES;
-        timerLabel.font                 = [UIFont systemFontOfSize:12];
-        timerLabel.textColor            = UIColor.blackColor;
-        timerLabel.textAlignment        = NSTextAlignmentCenter;
-        [adImageView addSubview:timerLabel];
-        
+        [self loadTimerLabel];
         [self loadObstructedView];
         
-        
-        // Timer to update the heading labels.
-        NSTimer *labelTimer = [[NSTimer alloc] init];
-        labelTimer = [NSTimer scheduledTimerWithTimeInterval:1.0/30.0
+        // Superloop for checking the orientation of the device and checking the participation of the user
+        NSTimer *superloopTimer = [[NSTimer alloc] init];
+        superloopTimer = [NSTimer scheduledTimerWithTimeInterval:1.0/30.0
                                                       target:self
-                                                    selector:@selector(updateHeadingLabels)
+                                                    selector:@selector(updateHeadings)
                                                     userInfo:nil
                                                      repeats:YES];
     }
     return self;
 }
 
-- (void) playSound{
-    if (!audioPlayer.isPlaying){
-        [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback error: nil]; // play on silent. 
-        [audioPlayer play];
-    }
+// Initialization and setup for the timer label that countsdown the remaining mandatory watch time.
+- (void) loadTimerLabel{
+    timerLabel = [[UILabel alloc] initWithFrame:CGRectMake(adImageView.frame.size.width-20, 0, 20, 20)];
+    timerLabel.backgroundColor      = [UIColor colorWithWhite:0.10 alpha:0.15];
+    timerLabel.text                 = [NSString stringWithFormat:@"%d", ad_duration];
+    timerLabel.layer.borderColor    = UIColor.blackColor.CGColor;
+    timerLabel.layer.borderWidth    = 1;
+    timerLabel.layer.cornerRadius   = 10;
+    timerLabel.clipsToBounds        = YES;
+    timerLabel.font                 = [UIFont systemFontOfSize:12];
+    timerLabel.textColor            = UIColor.blackColor;
+    timerLabel.textAlignment        = NSTextAlignmentCenter;
+    [adImageView addSubview:timerLabel];
 }
+
 
 // View for when the user is not looking at the view
 - (void) loadObstructedView{
@@ -112,67 +112,36 @@
     resumeLabel.backgroundColor = [UIColor colorWithRed:1.0 green:0.5 blue:0.66 alpha:0.80];
     [obstructed_view addSubview:resumeLabel];
     
-    // declare the audio noise.
+    // Setup the obstructed view audio.
     NSURL *soundFileURL = [[NSBundle mainBundle] URLForResource:@"resume_viewing" withExtension:@"mp3"];
     audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:soundFileURL error:nil];
     audioPlayer.numberOfLoops = 0;
 }
 
-- (void) techDemoSetup{
-    // Attitude accelerometer data
-    rollLabel   = [[UILabel alloc] initWithFrame:CGRectMake(0, 350, 60, 45)];
-    pitchLabel  = [[UILabel alloc] initWithFrame:CGRectMake(0, 410, 60, 45)];
-    yawLabel    = [[UILabel alloc] initWithFrame:CGRectMake(0, 470, 60, 45)];
-    [self defaultAxisLabelSettings:rollLabel];
-    [self defaultAxisLabelSettings:pitchLabel];
-    [self defaultAxisLabelSettings:yawLabel];
-    rollLabel.text  = @"Roll\n0.0";
-    pitchLabel.text = @"Pitch\n0.0";
-    yawLabel.text   = @"Yaw\n0.0";
-    [self addSubview:rollLabel];
-    [self addSubview:pitchLabel];
-    [self addSubview:yawLabel];
-    
-    // Spherical coordinates accelerometer data
-    thetaLabel  = [[UILabel alloc] initWithFrame:CGRectMake(self.frame.size.width-60, 350, 60, 45)];
-    phiLabel    = [[UILabel alloc] initWithFrame:CGRectMake(self.frame.size.width-60, 410, 60, 45)];
-    tiltLabel   = [[UILabel alloc] initWithFrame:CGRectMake(self.frame.size.width-60, 470, 60, 45)];
-    [self defaultAxisLabelSettings:thetaLabel];
-    [self defaultAxisLabelSettings:phiLabel];
-    [self defaultAxisLabelSettings:tiltLabel];
-    thetaLabel.text = @"𝛉\n0.0";
-    phiLabel.text   = @"ɸ\n0.0";
-    tiltLabel.text  = @"Tilt\n0.0";
-    [self addSubview:thetaLabel];
-    [self addSubview:phiLabel];
-    [self addSubview:tiltLabel];
-    
+#pragma mark - Core Methods
+
+// Play the view obstructed obnoxious high pitched sound w/ "Resume Viewing" in the background
+- (void) playSound{
+    if (!audioPlayer.isPlaying){
+        [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback error: nil]; // play on silent.
+        [audioPlayer play];
+    }
 }
 
-// Let's just set the label properties instead of having a custom class that's just basic UI settings. easier to package. 
-- (void) defaultAxisLabelSettings:(UILabel*)label{
-    label.numberOfLines      = 2;
-    label.textAlignment      = NSTextAlignmentCenter;
-    label.backgroundColor    = [UIColor colorWithWhite:1 alpha:0.15];
-    label.font               = [UIFont systemFontOfSize:12];
-}
-
-// Update the labels on the sides for the tech demo. the logic for this only makes sense if the headings only show during the ad.
-- (void) updateHeadingLabels{
+// Grab the new headings information, check for the user's participation, and then if it's a tech demo update the labels
+- (void) updateHeadings{
     NSDictionary *headings = [self extrapolateHeadings:motionManager];
     bool isParticipating = [self checkUserParticipation:headings];
     if (!isParticipating){
-        NSLog(@"user not watching the ad");
+        NSLog(@"WARNING: User may not be watching the advertisement.");
     }
     
-    rollLabel.text      = [NSString stringWithFormat:@"Roll\n%.2f", [[headings objectForKey:@"roll"] doubleValue]];
-    pitchLabel.text     = [NSString stringWithFormat:@"Pitch\n%.2f", [[headings objectForKey:@"pitch"] doubleValue]];
-    yawLabel.text       = [NSString stringWithFormat:@"Yaw\n%.2f", [[headings objectForKey:@"yaw"] doubleValue]];
-    
-    phiLabel.text       = [NSString stringWithFormat:@"ɸ\n%.2f", [[headings objectForKey:@"phi"] doubleValue]];
-    thetaLabel.text     = [NSString stringWithFormat:@"𝛉\n%.2f", [[headings objectForKey:@"theta"] doubleValue]];
-    tiltLabel.text      = [NSString stringWithFormat:@"Tilt\n%.2f°", [[headings objectForKey:@"tilt"] doubleValue]];
+    if (techDemo){
+        [self updateHeadingLabels:headings];
+    }
 }
+
+
 
 // Calculate all the heading information for the six directions and return them as a dictionary.
 - (NSDictionary*) extrapolateHeadings:(CMMotionManager*)manager{
@@ -300,7 +269,9 @@
     return YES;
 }
 
+#pragma mark - Tech Demo Methods
 
+// Should the tech demo labels be hidden or visible to the user.
 - (void) setTechDemo:(bool)on_status{
     techDemo = on_status;
     [rollLabel  setHidden:!on_status];
@@ -311,5 +282,57 @@
     [tiltLabel  setHidden:!on_status];
 }
 
+// If this framework is running as a tech demo and you want to show the user what is happening under the hood, we add labels that display the accelerometer data for the device with both coordinate schemes.
+- (void) techDemoSetup{
+    // Attitude accelerometer data
+    rollLabel   = [[UILabel alloc] initWithFrame:CGRectMake(0, 350, 60, 45)];
+    pitchLabel  = [[UILabel alloc] initWithFrame:CGRectMake(0, 410, 60, 45)];
+    yawLabel    = [[UILabel alloc] initWithFrame:CGRectMake(0, 470, 60, 45)];
+    [self defaultAxisLabelSettings:rollLabel];
+    [self defaultAxisLabelSettings:pitchLabel];
+    [self defaultAxisLabelSettings:yawLabel];
+    rollLabel.text  = @"Roll\n0.0";
+    pitchLabel.text = @"Pitch\n0.0";
+    yawLabel.text   = @"Yaw\n0.0";
+    [self addSubview:rollLabel];
+    [self addSubview:pitchLabel];
+    [self addSubview:yawLabel];
+    
+    // Spherical coordinates accelerometer data
+    thetaLabel  = [[UILabel alloc] initWithFrame:CGRectMake(self.frame.size.width-60, 350, 60, 45)];
+    phiLabel    = [[UILabel alloc] initWithFrame:CGRectMake(self.frame.size.width-60, 410, 60, 45)];
+    tiltLabel   = [[UILabel alloc] initWithFrame:CGRectMake(self.frame.size.width-60, 470, 60, 45)];
+    [self defaultAxisLabelSettings:thetaLabel];
+    [self defaultAxisLabelSettings:phiLabel];
+    [self defaultAxisLabelSettings:tiltLabel];
+    thetaLabel.text = @"𝛉\n0.0";
+    phiLabel.text   = @"ɸ\n0.0";
+    tiltLabel.text  = @"Tilt\n0.0";
+    [self addSubview:thetaLabel];
+    [self addSubview:phiLabel];
+    [self addSubview:tiltLabel];
+    
+    [self setTechDemo:NO];
+    
+}
+
+// This function takes in a UILabel and pushes the standard settings for a tech-demo label (formerly AxisLabel object)
+- (void) defaultAxisLabelSettings:(UILabel*)label{
+    label.numberOfLines      = 2;
+    label.textAlignment      = NSTextAlignmentCenter;
+    label.backgroundColor    = [UIColor colorWithWhite:1 alpha:0.15];
+    label.font               = [UIFont systemFontOfSize:12];
+}
+
+// Update the labels on the sides for the tech demo.
+- (void) updateHeadingLabels:(NSDictionary*)headings{
+    rollLabel.text      = [NSString stringWithFormat:@"Roll\n%.2f", [[headings objectForKey:@"roll"] doubleValue]];
+    pitchLabel.text     = [NSString stringWithFormat:@"Pitch\n%.2f", [[headings objectForKey:@"pitch"] doubleValue]];
+    yawLabel.text       = [NSString stringWithFormat:@"Yaw\n%.2f", [[headings objectForKey:@"yaw"] doubleValue]];
+    
+    phiLabel.text       = [NSString stringWithFormat:@"ɸ\n%.2f", [[headings objectForKey:@"phi"] doubleValue]];
+    thetaLabel.text     = [NSString stringWithFormat:@"𝛉\n%.2f", [[headings objectForKey:@"theta"] doubleValue]];
+    tiltLabel.text      = [NSString stringWithFormat:@"Tilt\n%.2f°", [[headings objectForKey:@"tilt"] doubleValue]];
+}
 
 @end

@@ -7,7 +7,6 @@
 //
 
 #import "ViewController.h"
-#import "AxisLabel.h"
 
 #define TAG_KEEP 1 // objects not to clear on subview clearance
 
