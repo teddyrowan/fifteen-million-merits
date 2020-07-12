@@ -9,24 +9,26 @@
 #import "AdvertisementView.h"
 #import "AxisLabel.h"
 #import <CoreMotion/CoreMotion.h>
+#import <AVFoundation/AVFoundation.h>
 
 @interface AdvertisementView (){
-    int time_remaining;
-    bool is_paused;
-    int capture_attempts;
+    bool is_paused;                             // is the ad paused ie: is the view obstructed
+    int capture_attempts;                       // retry limit for capturing non-zero accelerometer data
+    int time_remaining;                         // how much advertisement time is remaining
     
-    CMMotionManager     *motionManager;
-    UIImageView *obstructed_view;
+    AVAudioPlayer       *audioPlayer;           // play a noise (resume_viewing.mp3) whenever view is obstructed
+    CMMotionManager     *motionManager;         // capture the accelerometer data
+    UIImageView         *obstructed_view;       // view to hide the whole screen and alert the user
     
     // tech-demo variables
     AxisLabel *rollLabel, *pitchLabel, *yawLabel;         // aircraft principal axes
     AxisLabel *thetaLabel, *phiLabel, *tiltLabel;         // spherical coordinate scheme
 }
-@property (nonatomic) int time_remaining, capture_attempts;
 @property (nonatomic) bool is_paused;
+@property (nonatomic) int time_remaining, capture_attempts;
+@property (strong) AVAudioPlayer *audioPlayer;
 @property (nonatomic, strong) CMMotionManager *motionManager;
 @property (nonatomic, strong) UIImageView *obstructed_view;
-
 @property (nonatomic, strong) AxisLabel *rollLabel, *pitchLabel, *yawLabel;         // aircraft principal axes
 @property (nonatomic, strong) AxisLabel *thetaLabel, *phiLabel, *tiltLabel;         // spherical coordinate sc
 @end
@@ -34,6 +36,7 @@
 @implementation AdvertisementView
 @synthesize adImageView, timerLabel, time_remaining, ad_duration, phi_0, pitch_0, theta_0, yaw_0, tilt_0, roll_0, is_paused, techDemo;
 @synthesize rollLabel, pitchLabel, yawLabel, thetaLabel, phiLabel, tiltLabel, motionManager, capture_attempts, obstructed_view;
+@synthesize audioPlayer;
 
 - (id) initWithFrame:(CGRect)frame{
     self = [super initWithFrame:frame];
@@ -83,6 +86,12 @@
     return self;
 }
 
+- (void) playSound{
+    if (!audioPlayer.isPlaying){
+        [audioPlayer play];
+    }
+}
+
 // View for when the user is not looking at the view
 - (void) loadObstructedView{
     obstructed_view = [[UIImageView alloc] initWithFrame:self.bounds];
@@ -102,6 +111,11 @@
     resumeLabel.layer.borderWidth = 3;
     resumeLabel.backgroundColor = [UIColor colorWithRed:1.0 green:0.5 blue:0.66 alpha:0.80];
     [obstructed_view addSubview:resumeLabel];
+    
+    // declare the audio noise.
+    NSURL *soundFileURL = [[NSBundle mainBundle] URLForResource:@"resume_viewing" withExtension:@"mp3"];
+    audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:soundFileURL error:nil];
+    audioPlayer.numberOfLoops = 0;
 }
 
 - (void) techDemoSetup{
@@ -183,11 +197,9 @@
     if (!is_paused){
         time_remaining --;
         timerLabel.text = [NSString stringWithFormat:@"%d", time_remaining];
-    } else {
-        timerLabel.text = @"!";
     }
         
-    NSLog(@"did countdown: %d", time_remaining);
+    NSLog(@"Advertisement Time Remaining: %ds", time_remaining);
     
     if (time_remaining <= 0){
         [sender invalidate];
@@ -257,6 +269,7 @@
         NSLog(@"maximum phi exceeded:: phi_0: %.2f  || phi: %.2f", phi_0, [[currentHeadings objectForKey:@"phi"] doubleValue]);
         is_paused = YES;
         [obstructed_view setHidden:NO];
+        [self playSound];
         return NO;
     }
     
@@ -264,10 +277,12 @@
         NSLog(@"maximum theta exceeded:: theta_0: %.2f  || theta: %.2f", theta_0, [[currentHeadings objectForKey:@"theta"] doubleValue]);
         is_paused = YES;
         [obstructed_view setHidden:NO];
+        [self playSound];
         return NO;
     }
     
     [obstructed_view setHidden:YES];
+    [audioPlayer stop];
     return YES;
 }
 

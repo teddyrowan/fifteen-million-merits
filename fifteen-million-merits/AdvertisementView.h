@@ -12,32 +12,28 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface AdvertisementView : UIView
 {
-    UIImageView *adImageView;
-    UILabel *timerLabel;
+    UIImageView *adImageView;                   // the image (video support to be added) for the advertisement
+    UILabel *timerLabel;                        // label that counts down the ad time remaining
+    int ad_duration;                            // total ad duration before the user can close it
     
-    int ad_duration;
+    double pitch_0, roll_0, yaw_0;              // initial values for principal aircraft coordinates
+    double theta_0, phi_0, tilt_0;              // initial values for spherical coordinates
     
-    // Variables for tracking relative movement
-    double pitch_0, roll_0, yaw_0;
-    double theta_0, phi_0, tilt_0;
-    
-    // App Demo variables
-    bool techDemo;      // pop labels that show the pitch-roll-yaw-theta-phi-tilt
+    bool techDemo;                              // is this a tech demo. ie: do you want to show the coordinate labels
 }
-
+@property (nonatomic) bool techDemo;
+@property (nonatomic) double pitch_0, roll_0, yaw_0, theta_0, phi_0, tilt_0;
+@property (nonatomic) int ad_duration;
 @property (nonatomic, strong) UIImageView *adImageView;
 @property (nonatomic, strong) UILabel *timerLabel;
-@property (nonatomic) int ad_duration;
-@property (nonatomic) double pitch_0, roll_0, yaw_0, theta_0, phi_0, tilt_0;
 
-@property (nonatomic) bool techDemo;
 
-- (void) capture_0;
+- (void) playSound;         // play the sound when the user's view is obstructed.
+- (void) capture_0;         // capture the initial heading values for the advertisement.
+- (void) startTimer;        // begin playing the advertisement
 
-- (bool) checkUserParticipation:(NSDictionary*)currentHeadings;
-- (void) startTimer;
-
-- (void) setTechDemo:(bool)on_status;
+- (bool) checkUserParticipation:(NSDictionary*)currentHeadings;     // is the user watching the ad
+- (void) setTechDemo:(bool)on_status;       // is this a tech demo.
 
 @end
 
