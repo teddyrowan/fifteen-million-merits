@@ -19,7 +19,6 @@
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor colorWithWhite:0.05 alpha:1];
     
-    
     // For tech demo. Testing button to pop the advertisement -- add a gradient or something. highlight on click.
     UIButton *popAdButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.center.x-100, 580, 200, 60)];
     [popAdButton setTitle:@"Test Advertisement" forState:UIControlStateNormal];
@@ -41,11 +40,11 @@
         }
     }
     
-    
     // Moutain Dew Ad -- replace w/ mountain dew advertisement video.
     AdvertisementView *advertisement = [[AdvertisementView alloc] initWithFrame:self.view.frame];
     advertisement.adImageView.image = [UIImage imageNamed:@"mountain-dew.jpg"];
     [advertisement setTechDemo:YES];
+    //[advertisement setStrictness:100];
     [self.view addSubview:advertisement];
     [advertisement startTimer];
     

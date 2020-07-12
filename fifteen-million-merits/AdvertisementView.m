@@ -22,13 +22,14 @@
     
     double pitch_0, roll_0, yaw_0;              // initial values for principal aircraft coordinates
     double theta_0, phi_0, tilt_0;              // initial values for spherical coordinates
+    double strictness;                          // [0-100] 25 default. how strict the user participation settings are.
     
     // tech-demo variables
     UILabel *rollLabel, *pitchLabel, *yawLabel;         // aircraft principal axes
     UILabel *thetaLabel, *phiLabel, *tiltLabel;         // spherical coordinate scheme
 }
 @property (nonatomic) bool is_paused;
-@property (nonatomic) double pitch_0, roll_0, yaw_0, theta_0, phi_0, tilt_0;
+@property (nonatomic) double pitch_0, roll_0, yaw_0, theta_0, phi_0, tilt_0, strictness;
 @property (nonatomic) int time_remaining, capture_attempts;
 @property (strong) AVAudioPlayer *audioPlayer;
 @property (nonatomic, strong) CMMotionManager *motionManager;
@@ -37,9 +38,7 @@
 @end
 
 @implementation AdvertisementView
-@synthesize adImageView, timerLabel, time_remaining, ad_duration, phi_0, pitch_0, theta_0, yaw_0, tilt_0, roll_0, is_paused, techDemo;
-@synthesize rollLabel, pitchLabel, yawLabel, thetaLabel, phiLabel, tiltLabel, motionManager, capture_attempts, obstructed_view;
-@synthesize audioPlayer;
+@synthesize adImageView, timerLabel, time_remaining, ad_duration, phi_0, pitch_0, theta_0, yaw_0, tilt_0, roll_0, is_paused, techDemo, rollLabel, pitchLabel, yawLabel, thetaLabel, phiLabel, tiltLabel, motionManager, capture_attempts, obstructed_view, audioPlayer, strictness;
 
 #pragma mark - Initialization and Essential Loading Methods
 
@@ -59,6 +58,7 @@
         ad_duration = 10; // default duration. 
         is_paused = NO;
         capture_attempts = 0;
+        strictness = 50; // percent.
         
         [self techDemoSetup];
         [self capture_0];
@@ -118,15 +118,7 @@
     audioPlayer.numberOfLoops = 0;
 }
 
-#pragma mark - Core Methods
-
-// Play the view obstructed obnoxious high pitched sound w/ "Resume Viewing" in the background
-- (void) playSound{
-    if (!audioPlayer.isPlaying){
-        [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback error: nil]; // play on silent.
-        [audioPlayer play];
-    }
-}
+#pragma mark - Core Accelerometer Methods
 
 // Grab the new headings information, check for the user's participation, and then if it's a tech demo update the labels
 - (void) updateHeadings{
@@ -140,8 +132,6 @@
         [self updateHeadingLabels:headings];
     }
 }
-
-
 
 // Calculate all the heading information for the six directions and return them as a dictionary.
 - (NSDictionary*) extrapolateHeadings:(CMMotionManager*)manager{
@@ -165,6 +155,80 @@
     [dict setObject:[NSNumber numberWithDouble:(Sz*180/M_PI)] forKey:@"tilt"];
     
     return dict;
+}
+
+// Store the initial values for the orientation when the advertisement starts playing.
+- (void) capture_0{
+    NSDictionary *headingDict = [self extrapolateHeadings:motionManager];
+    
+    phi_0   = [[headingDict objectForKey:@"phi"] doubleValue];
+    yaw_0   = [[headingDict objectForKey:@"yaw"] doubleValue];
+    theta_0 = [[headingDict objectForKey:@"theta"] doubleValue];
+    tilt_0  = [[headingDict objectForKey:@"tilt"] doubleValue];
+    pitch_0 = [[headingDict objectForKey:@"pitch"] doubleValue];
+    roll_0  = [[headingDict objectForKey:@"roll"] doubleValue];
+    
+    // The motionManager takes about 0.2s to intialize so the first couple of attempts to capture the orientation usually fail.
+    if (fabs(phi_0) < 0.01 && fabs(pitch_0) < 0.01 && fabs(theta_0) < 0.01){
+        capture_attempts ++;
+        NSLog(@"Error Capturing Initial Orientation. Attempt %d/10", capture_attempts);
+        if (capture_attempts >= 10){
+            NSLog(@"Failed to capture initial orientation.");
+            return;
+        }
+        [NSThread sleepForTimeInterval:0.1f];
+        [self capture_0];
+        return;
+    }
+    NSLog(@"Successful Capture Of Initial Orientation.");
+}
+
+// Check whether the user is still looking at the screen
+- (bool) checkUserParticipation:(NSDictionary*)currentHeadings{
+    //double pitchLimit = 0.35;   // basic 0.35   || strict 0.2 // using phi instead of pitch for now.
+    //double thetaLimit = 40;     // basic 45     || strict 25 degrees
+    //double phiLimit = 30;       // basic 35     || strict 20 degrees
+    
+    double thetaLimit = 60 - 40.0*strictness/100;  // bound between 20 and 60. default = 40
+    double phiLimit = 45 - 30*strictness/100;      // bound between 15 and 45. default = 30
+    
+    is_paused = NO;
+    
+    // If the user has watched all the mandatory ad then their participation is no longer required.
+    if (!time_remaining){
+        [obstructed_view setHidden:YES];
+        return YES;
+    }
+    
+    if (fabs([[currentHeadings objectForKey:@"phi"] doubleValue] - phi_0) > phiLimit){
+        NSLog(@"maximum phi exceeded:: phi_0: %.2f  || phi: %.2f", phi_0, [[currentHeadings objectForKey:@"phi"] doubleValue]);
+        is_paused = YES;
+        [obstructed_view setHidden:NO];
+        [self playSound];
+        return NO;
+    }
+    
+    if (fabs([[currentHeadings objectForKey:@"theta"] doubleValue] - theta_0) > thetaLimit){
+        NSLog(@"maximum theta exceeded:: theta_0: %.2f  || theta: %.2f", theta_0, [[currentHeadings objectForKey:@"theta"] doubleValue]);
+        is_paused = YES;
+        [obstructed_view setHidden:NO];
+        [self playSound];
+        return NO;
+    }
+    
+    [obstructed_view setHidden:YES];
+    [audioPlayer stop];
+    return YES;
+}
+
+#pragma mark - Core (Non-Accelerometer) Methods
+
+// Play the view obstructed obnoxious high pitched sound w/ "Resume Viewing" in the background
+- (void) playSound{
+    if (!audioPlayer.isPlaying){
+        [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback error: nil]; // play on silent.
+        [audioPlayer play];
+    }
 }
 
 // Begin the ad timer countdown.
@@ -208,66 +272,17 @@
     [self removeFromSuperview];
 }
 
-// Store the initial values for the orientation when the advertisement starts playing.
-- (void) capture_0{
-    NSDictionary *headingDict = [self extrapolateHeadings:motionManager];
-    
-    phi_0   = [[headingDict objectForKey:@"phi"] doubleValue];
-    yaw_0   = [[headingDict objectForKey:@"yaw"] doubleValue];
-    theta_0 = [[headingDict objectForKey:@"theta"] doubleValue];
-    tilt_0  = [[headingDict objectForKey:@"tilt"] doubleValue];
-    pitch_0 = [[headingDict objectForKey:@"pitch"] doubleValue];
-    roll_0  = [[headingDict objectForKey:@"roll"] doubleValue];
-    
-    // The motionManager takes about 0.2s to intialize so the first couple of attempts to capture the orientation usually fail.
-    if (fabs(phi_0) < 0.01 && fabs(pitch_0) < 0.01 && fabs(theta_0) < 0.01){
-        capture_attempts ++;
-        NSLog(@"Error Capturing Initial Orientation. Attempt %d/10", capture_attempts);
-        if (capture_attempts >= 10){
-            NSLog(@"Failed to capture initial orientation.");
-            return;
-        }
-        [NSThread sleepForTimeInterval:0.1f];
-        [self capture_0];
-        return;
+// Set the strictness but bound it from 0-100.
+- (void) setStrictness:(double)value{
+    if (value < 0){
+        strictness = 0;
+    } else if (value > 100){
+        strictness = 100;
+    } else {
+        strictness = value;
     }
-    NSLog(@"Successful Capture Of Initial Orientation.");
 }
 
-// Check whether the user is still looking at the screen
-- (bool) checkUserParticipation:(NSDictionary*)currentHeadings{
-    //double pitchLimit = 0.35;   // basic 0.35   || strict 0.2 // using phi instead of pitch for now.
-    double thetaLimit = 40;     // basic 45     || strict 25 degrees
-    double phiLimit = 30;       // basic 35     || strict 20 degrees
-    
-    is_paused = NO;
-    
-    // If the user has watched all the mandatory ad then their participation is no longer required.
-    if (!time_remaining){
-        [obstructed_view setHidden:YES];
-        return YES;
-    }
-    
-    if (fabs([[currentHeadings objectForKey:@"phi"] doubleValue] - phi_0) > phiLimit){
-        NSLog(@"maximum phi exceeded:: phi_0: %.2f  || phi: %.2f", phi_0, [[currentHeadings objectForKey:@"phi"] doubleValue]);
-        is_paused = YES;
-        [obstructed_view setHidden:NO];
-        [self playSound];
-        return NO;
-    }
-    
-    if (fabs([[currentHeadings objectForKey:@"theta"] doubleValue] - theta_0) > thetaLimit){
-        NSLog(@"maximum theta exceeded:: theta_0: %.2f  || theta: %.2f", theta_0, [[currentHeadings objectForKey:@"theta"] doubleValue]);
-        is_paused = YES;
-        [obstructed_view setHidden:NO];
-        [self playSound];
-        return NO;
-    }
-    
-    [obstructed_view setHidden:YES];
-    [audioPlayer stop];
-    return YES;
-}
 
 #pragma mark - Tech Demo Methods
 
