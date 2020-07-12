@@ -7,7 +7,6 @@
 //
 
 #import "AdvertisementView.h"
-#import "AxisLabel.h"
 #import <CoreMotion/CoreMotion.h>
 #import <AVFoundation/AVFoundation.h>
 
@@ -21,16 +20,16 @@
     UIImageView         *obstructed_view;       // view to hide the whole screen and alert the user
     
     // tech-demo variables
-    AxisLabel *rollLabel, *pitchLabel, *yawLabel;         // aircraft principal axes
-    AxisLabel *thetaLabel, *phiLabel, *tiltLabel;         // spherical coordinate scheme
+    UILabel *rollLabel, *pitchLabel, *yawLabel;         // aircraft principal axes
+    UILabel *thetaLabel, *phiLabel, *tiltLabel;         // spherical coordinate scheme
 }
 @property (nonatomic) bool is_paused;
 @property (nonatomic) int time_remaining, capture_attempts;
 @property (strong) AVAudioPlayer *audioPlayer;
 @property (nonatomic, strong) CMMotionManager *motionManager;
 @property (nonatomic, strong) UIImageView *obstructed_view;
-@property (nonatomic, strong) AxisLabel *rollLabel, *pitchLabel, *yawLabel;         // aircraft principal axes
-@property (nonatomic, strong) AxisLabel *thetaLabel, *phiLabel, *tiltLabel;         // spherical coordinate sc
+@property (nonatomic, strong) UILabel *rollLabel, *pitchLabel, *yawLabel;         // aircraft principal axes
+@property (nonatomic, strong) UILabel *thetaLabel, *phiLabel, *tiltLabel;         // spherical coordinate axes
 @end
 
 @implementation AdvertisementView
@@ -88,6 +87,7 @@
 
 - (void) playSound{
     if (!audioPlayer.isPlaying){
+        [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback error: nil]; // play on silent. 
         [audioPlayer play];
     }
 }
@@ -120,9 +120,12 @@
 
 - (void) techDemoSetup{
     // Attitude accelerometer data
-    rollLabel   = [[AxisLabel alloc] initWithFrame:CGRectMake(0, 350, 60, 45)];
-    pitchLabel  = [[AxisLabel alloc] initWithFrame:CGRectMake(0, 410, 60, 45)];
-    yawLabel    = [[AxisLabel alloc] initWithFrame:CGRectMake(0, 470, 60, 45)];
+    rollLabel   = [[UILabel alloc] initWithFrame:CGRectMake(0, 350, 60, 45)];
+    pitchLabel  = [[UILabel alloc] initWithFrame:CGRectMake(0, 410, 60, 45)];
+    yawLabel    = [[UILabel alloc] initWithFrame:CGRectMake(0, 470, 60, 45)];
+    [self defaultAxisLabelSettings:rollLabel];
+    [self defaultAxisLabelSettings:pitchLabel];
+    [self defaultAxisLabelSettings:yawLabel];
     rollLabel.text  = @"Roll\n0.0";
     pitchLabel.text = @"Pitch\n0.0";
     yawLabel.text   = @"Yaw\n0.0";
@@ -131,9 +134,12 @@
     [self addSubview:yawLabel];
     
     // Spherical coordinates accelerometer data
-    thetaLabel  = [[AxisLabel alloc] initWithFrame:CGRectMake(self.frame.size.width-60, 350, 60, 45)];
-    phiLabel    = [[AxisLabel alloc] initWithFrame:CGRectMake(self.frame.size.width-60, 410, 60, 45)];
-    tiltLabel   = [[AxisLabel alloc] initWithFrame:CGRectMake(self.frame.size.width-60, 470, 60, 45)];
+    thetaLabel  = [[UILabel alloc] initWithFrame:CGRectMake(self.frame.size.width-60, 350, 60, 45)];
+    phiLabel    = [[UILabel alloc] initWithFrame:CGRectMake(self.frame.size.width-60, 410, 60, 45)];
+    tiltLabel   = [[UILabel alloc] initWithFrame:CGRectMake(self.frame.size.width-60, 470, 60, 45)];
+    [self defaultAxisLabelSettings:thetaLabel];
+    [self defaultAxisLabelSettings:phiLabel];
+    [self defaultAxisLabelSettings:tiltLabel];
     thetaLabel.text = @"𝛉\n0.0";
     phiLabel.text   = @"ɸ\n0.0";
     tiltLabel.text  = @"Tilt\n0.0";
@@ -141,6 +147,14 @@
     [self addSubview:phiLabel];
     [self addSubview:tiltLabel];
     
+}
+
+// Let's just set the label properties instead of having a custom class that's just basic UI settings. easier to package. 
+- (void) defaultAxisLabelSettings:(UILabel*)label{
+    label.numberOfLines      = 2;
+    label.textAlignment      = NSTextAlignmentCenter;
+    label.backgroundColor    = [UIColor colorWithWhite:1 alpha:0.15];
+    label.font               = [UIFont systemFontOfSize:12];
 }
 
 // Update the labels on the sides for the tech demo. the logic for this only makes sense if the headings only show during the ad.

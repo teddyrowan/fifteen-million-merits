@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2F0CB0DB24B51AF1005FD3A2 /* AxisLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F0CB0DA24B51AF1005FD3A2 /* AxisLabel.m */; };
 		2F15476224B99062006E879A /* blocked_view.png in Resources */ = {isa = PBXBuildFile; fileRef = 2F15476124B99062006E879A /* blocked_view.png */; };
 		2F1E637F24B3DE73000499C0 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F1E637E24B3DE73000499C0 /* AppDelegate.m */; };
 		2F1E638224B3DE73000499C0 /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F1E638124B3DE73000499C0 /* SceneDelegate.m */; };
@@ -22,8 +21,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		2F0CB0D924B51AF1005FD3A2 /* AxisLabel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AxisLabel.h; sourceTree = "<group>"; };
-		2F0CB0DA24B51AF1005FD3A2 /* AxisLabel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AxisLabel.m; sourceTree = "<group>"; };
 		2F15476124B99062006E879A /* blocked_view.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blocked_view.png; sourceTree = "<group>"; };
 		2F1E637A24B3DE73000499C0 /* 15mm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = 15mm.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2F1E637D24B3DE73000499C0 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -79,8 +76,6 @@
 				2F1E638124B3DE73000499C0 /* SceneDelegate.m */,
 				2F61051C24B78A5E00DA06F9 /* AdvertisementView.h */,
 				2F61051D24B78A5E00DA06F9 /* AdvertisementView.m */,
-				2F0CB0D924B51AF1005FD3A2 /* AxisLabel.h */,
-				2F0CB0DA24B51AF1005FD3A2 /* AxisLabel.m */,
 				2F1E638324B3DE73000499C0 /* ViewController.h */,
 				2F1E638424B3DE73000499C0 /* ViewController.m */,
 				2F1E638624B3DE73000499C0 /* Main.storyboard */,
@@ -170,7 +165,6 @@
 			files = (
 				2F1E638524B3DE73000499C0 /* ViewController.m in Sources */,
 				2F1E637F24B3DE73000499C0 /* AppDelegate.m in Sources */,
-				2F0CB0DB24B51AF1005FD3A2 /* AxisLabel.m in Sources */,
 				2F1E639024B3DE7A000499C0 /* main.m in Sources */,
 				2F61051E24B78A5E00DA06F9 /* AdvertisementView.m in Sources */,
 				2F1E638224B3DE73000499C0 /* SceneDelegate.m in Sources */,

@@ -11,14 +11,10 @@
 
 #define TAG_KEEP 1 // objects not to clear on subview clearance
 
-@interface ViewController (){
-    UIButton *popAdButton;
-}
-@property (nonatomic, strong) UIButton *popAdButton;
+@interface ViewController ()
 @end
 
 @implementation ViewController
-@synthesize popAdButton;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -26,19 +22,19 @@
     
     
     // For tech demo. Testing button to pop the advertisement -- add a gradient or something. highlight on click.
-    popAdButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.center.x-100, 580, 200, 60)];
+    UIButton *popAdButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.center.x-100, 580, 200, 60)];
     [popAdButton setTitle:@"Test Advertisement" forState:UIControlStateNormal];
     popAdButton.backgroundColor     = [UIColor colorWithWhite:0.10 alpha:1.0];
     popAdButton.layer.borderColor   = UIColor.whiteColor.CGColor;
     popAdButton.layer.cornerRadius  = 10;
     popAdButton.layer.borderWidth   = 1;
     popAdButton.tag = TAG_KEEP;
-    [popAdButton addTarget:self action:@selector(loadAdvertisement) forControlEvents:UIControlEventTouchUpInside];
+    [popAdButton addTarget:self action:@selector(loadAdvertisement:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:popAdButton];
 }
 
 // Load up whatever advertisement you choose.
-- (void) loadAdvertisement{
+- (void) loadAdvertisement:(UIButton*)sender{
     // Clear out other advertisements and the like.
     for (UIView *view in [self.view subviews]){
         if (view.tag != TAG_KEEP){
@@ -54,7 +50,7 @@
     [self.view addSubview:advertisement];
     [advertisement startTimer];
     
-    [self.view bringSubviewToFront:popAdButton];
+    [self.view bringSubviewToFront:sender];
 }
 
 
