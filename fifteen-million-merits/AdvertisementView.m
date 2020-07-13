@@ -22,14 +22,13 @@
     
     double pitch_0, roll_0, yaw_0;              // initial values for principal aircraft coordinates
     double theta_0, phi_0, tilt_0;              // initial values for spherical coordinates
-    double strictness;                          // [0-100] 25 default. how strict the user participation settings are.
     
     // tech-demo variables
     UILabel *rollLabel, *pitchLabel, *yawLabel;         // aircraft principal axes
     UILabel *thetaLabel, *phiLabel, *tiltLabel;         // spherical coordinate scheme
 }
 @property (nonatomic) bool is_paused;
-@property (nonatomic) double pitch_0, roll_0, yaw_0, theta_0, phi_0, tilt_0, strictness;
+@property (nonatomic) double pitch_0, roll_0, yaw_0, theta_0, phi_0, tilt_0;
 @property (nonatomic) int time_remaining, capture_attempts;
 @property (strong) AVAudioPlayer *audioPlayer;
 @property (nonatomic, strong) CMMotionManager *motionManager;
@@ -118,6 +117,17 @@
     audioPlayer.numberOfLoops = 0;
 }
 
+// Bound the ad_duration minimum and also update the timerLabel immediately. 
+- (void) setAd_duration:(int)value{
+    if (value < 1){
+        ad_duration = 1;
+    } else {
+        ad_duration = value;
+    }
+    
+    timerLabel.text = [NSString stringWithFormat:@"%d", ad_duration];
+}
+
 #pragma mark - Core Accelerometer Methods
 
 // Grab the new headings information, check for the user's participation, and then if it's a tech demo update the labels
@@ -185,10 +195,7 @@
 
 // Check whether the user is still looking at the screen
 - (bool) checkUserParticipation:(NSDictionary*)currentHeadings{
-    //double pitchLimit = 0.35;   // basic 0.35   || strict 0.2 // using phi instead of pitch for now.
-    //double thetaLimit = 40;     // basic 45     || strict 25 degrees
-    //double phiLimit = 30;       // basic 35     || strict 20 degrees
-    
+    // the lower bounds are a little bit too firm still.
     double thetaLimit = 60 - 40.0*strictness/100;  // bound between 20 and 60. default = 40
     double phiLimit = 45 - 30*strictness/100;      // bound between 15 and 45. default = 30
     
@@ -201,7 +208,7 @@
     }
     
     if (fabs([[currentHeadings objectForKey:@"phi"] doubleValue] - phi_0) > phiLimit){
-        NSLog(@"maximum phi exceeded:: phi_0: %.2f  || phi: %.2f", phi_0, [[currentHeadings objectForKey:@"phi"] doubleValue]);
+        NSLog(@"Maximum Phi Exceeded: phi_0: %.2f°  || phi: %.2f°", phi_0, [[currentHeadings objectForKey:@"phi"] doubleValue]);
         is_paused = YES;
         [obstructed_view setHidden:NO];
         [self playSound];
@@ -209,15 +216,18 @@
     }
     
     if (fabs([[currentHeadings objectForKey:@"theta"] doubleValue] - theta_0) > thetaLimit){
-        NSLog(@"maximum theta exceeded:: theta_0: %.2f  || theta: %.2f", theta_0, [[currentHeadings objectForKey:@"theta"] doubleValue]);
+        NSLog(@"Maximum Theta Exceeded: theta_0: %.2f°  || theta: %.2f°", theta_0, [[currentHeadings objectForKey:@"theta"] doubleValue]);
         is_paused = YES;
         [obstructed_view setHidden:NO];
         [self playSound];
         return NO;
     }
     
+    // Device orientation is acceptable, continue the ad
     [obstructed_view setHidden:YES];
-    [audioPlayer stop];
+    if (audioPlayer.isPlaying){
+        [audioPlayer stop];
+    }
     return YES;
 }
 
@@ -236,7 +246,11 @@
     time_remaining = ad_duration;
     
     NSTimer *countdownTimer = [[NSTimer alloc] init];
-    countdownTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(countdown:) userInfo:nil repeats:YES];
+    countdownTimer = [NSTimer scheduledTimerWithTimeInterval:1.0
+                                                      target:self
+                                                    selector:@selector(countdown:)
+                                                    userInfo:nil
+                                                     repeats:YES];
 }
 
 // After mandatory watch period allow the user to kill the ad.
@@ -276,8 +290,10 @@
 - (void) setStrictness:(double)value{
     if (value < 0){
         strictness = 0;
+        NSLog(@"WARNING: Attempt to set strictness < 0. Strictness set to zero.");
     } else if (value > 100){
         strictness = 100;
+        NSLog(@"WARNING: Attempt to set strictness > 100. Strictness set to 100.");
     } else {
         strictness = value;
     }
@@ -341,12 +357,12 @@
 
 // Update the labels on the sides for the tech demo.
 - (void) updateHeadingLabels:(NSDictionary*)headings{
-    rollLabel.text      = [NSString stringWithFormat:@"Roll\n%.2f", [[headings objectForKey:@"roll"] doubleValue]];
+    rollLabel.text      = [NSString stringWithFormat:@"Roll\n%.2f",  [[headings objectForKey:@"roll"] doubleValue]];
     pitchLabel.text     = [NSString stringWithFormat:@"Pitch\n%.2f", [[headings objectForKey:@"pitch"] doubleValue]];
-    yawLabel.text       = [NSString stringWithFormat:@"Yaw\n%.2f", [[headings objectForKey:@"yaw"] doubleValue]];
+    yawLabel.text       = [NSString stringWithFormat:@"Yaw\n%.2f",   [[headings objectForKey:@"yaw"] doubleValue]];
     
-    phiLabel.text       = [NSString stringWithFormat:@"ɸ\n%.2f", [[headings objectForKey:@"phi"] doubleValue]];
-    thetaLabel.text     = [NSString stringWithFormat:@"𝛉\n%.2f", [[headings objectForKey:@"theta"] doubleValue]];
+    phiLabel.text       = [NSString stringWithFormat:@"ɸ\n%.2f",     [[headings objectForKey:@"phi"] doubleValue]];
+    thetaLabel.text     = [NSString stringWithFormat:@"𝛉\n%.2f",     [[headings objectForKey:@"theta"] doubleValue]];
     tiltLabel.text      = [NSString stringWithFormat:@"Tilt\n%.2f°", [[headings objectForKey:@"tilt"] doubleValue]];
 }
 
