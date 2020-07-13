@@ -47,21 +47,27 @@
         adImageView = [[UIImageView alloc] initWithFrame:CGRectMake(self.center.x-150, self.center.y-190, 300, 180)];
         [self addSubview:adImageView];
         
+        // Advertisement Variables that are required whether motionManager is available or not
+        [self loadTimerLabel];
+        ad_duration = 10;       // default duration.
+        
         // Manager for the orientation detection. This takes about 0.2s to initialize so call it earlier than later.
         motionManager = [[CMMotionManager alloc] init];
         if (motionManager.deviceMotionAvailable) {
             motionManager.deviceMotionUpdateInterval = 1.0/70.0;
             [motionManager startDeviceMotionUpdates];
-        } // else {this is the whole point of the demo, so we doneskies. for framework move this to the start and pop exit out.}
+        } else {
+            // motionManager is the whole point of the class, but if the device doesn't support it then a regular ad should still play.
+            return self;
+        }
         
-        ad_duration = 10; // default duration. 
+        // Variables / setup that are only required if motionManager is available
+        strictness = 50;        // default
         is_paused = NO;
         capture_attempts = 0;
-        strictness = 50; // percent.
         
         [self techDemoSetup];
         [self capture_0];
-        [self loadTimerLabel];
         [self loadObstructedView];
         
         // Superloop for checking the orientation of the device and checking the participation of the user
