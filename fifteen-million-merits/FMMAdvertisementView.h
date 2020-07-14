@@ -1,5 +1,5 @@
 //
-//  AdvertisementView.h
+//  FMMAdvertisementView.h
 //  fifteen-million-merits
 //
 //  Created by TR on 2020-07-09.
@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface AdvertisementView : UIView
+@interface FMMAdvertisementView : UIView
 {
     UIImageView *adImageView;                   // the image (video support to be added) for the advertisement
     

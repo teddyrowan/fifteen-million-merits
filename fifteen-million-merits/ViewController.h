@@ -7,11 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <CoreLocation/CoreLocation.h>
-#import <CoreMotion/CoreMotion.h>
-#import "AdvertisementView.h"
 
 @interface ViewController : UIViewController
 
-@end
 
+@end

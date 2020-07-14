@@ -1,16 +1,16 @@
 //
-//  AdvertisementView.m
+//  FMMAdvertisementView.m
 //  fifteen-million-merits
 //
 //  Created by TR on 2020-07-09.
 //  Copyright © 2020 edwardrowan. All rights reserved.
 //
 
-#import "AdvertisementView.h"
+#import "FMMAdvertisementView.h"
 #import <CoreMotion/CoreMotion.h>
 #import <AVFoundation/AVFoundation.h>
 
-@interface AdvertisementView (){
+@interface FMMAdvertisementView (){
     bool is_paused;                             // is the ad paused ie: is the view obstructed
     int capture_attempts;                       // retry limit for capturing non-zero accelerometer data
     int time_remaining;                         // how much advertisement time is remaining
@@ -36,7 +36,7 @@
 @property (nonatomic, strong) UILabel *timerLabel, *rollLabel, *pitchLabel, *yawLabel, *thetaLabel, *phiLabel, *tiltLabel;
 @end
 
-@implementation AdvertisementView
+@implementation FMMAdvertisementView
 @synthesize adImageView, timerLabel, time_remaining, ad_duration, phi_0, pitch_0, theta_0, yaw_0, tilt_0, roll_0, is_paused, techDemo, rollLabel, pitchLabel, yawLabel, thetaLabel, phiLabel, tiltLabel, motionManager, capture_attempts, obstructed_view, audioPlayer, strictness;
 
 #pragma mark - Initialization and Essential Loading Methods

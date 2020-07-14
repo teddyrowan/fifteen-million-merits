@@ -15,7 +15,7 @@
 		2F1E638A24B3DE7A000499C0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2F1E638924B3DE7A000499C0 /* Assets.xcassets */; };
 		2F1E638D24B3DE7A000499C0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2F1E638B24B3DE7A000499C0 /* LaunchScreen.storyboard */; };
 		2F1E639024B3DE7A000499C0 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F1E638F24B3DE7A000499C0 /* main.m */; };
-		2F61051E24B78A5E00DA06F9 /* AdvertisementView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F61051D24B78A5E00DA06F9 /* AdvertisementView.m */; };
+		2F61051E24B78A5E00DA06F9 /* FMMAdvertisementView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F61051D24B78A5E00DA06F9 /* FMMAdvertisementView.m */; };
 		2F7427CF24BA8AB100E1A08F /* resume_viewing.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 2F7427CE24BA8AB100E1A08F /* resume_viewing.mp3 */; };
 		2F816C3324BD5E4100F3C19A /* wraith-ad-edit.png in Resources */ = {isa = PBXBuildFile; fileRef = 2F816C3224BD5E4100F3C19A /* wraith-ad-edit.png */; };
 		2F816C3524BD61FB00F3C19A /* 2048-demo-bg.png in Resources */ = {isa = PBXBuildFile; fileRef = 2F816C3424BD61FB00F3C19A /* 2048-demo-bg.png */; };
@@ -36,8 +36,8 @@
 		2F1E638C24B3DE7A000499C0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2F1E638E24B3DE7A000499C0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2F1E638F24B3DE7A000499C0 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		2F61051C24B78A5E00DA06F9 /* AdvertisementView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AdvertisementView.h; sourceTree = "<group>"; };
-		2F61051D24B78A5E00DA06F9 /* AdvertisementView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AdvertisementView.m; sourceTree = "<group>"; };
+		2F61051C24B78A5E00DA06F9 /* FMMAdvertisementView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FMMAdvertisementView.h; sourceTree = "<group>"; };
+		2F61051D24B78A5E00DA06F9 /* FMMAdvertisementView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FMMAdvertisementView.m; sourceTree = "<group>"; };
 		2F7427CE24BA8AB100E1A08F /* resume_viewing.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = resume_viewing.mp3; path = resources/resume_viewing.mp3; sourceTree = SOURCE_ROOT; };
 		2F816C3224BD5E4100F3C19A /* wraith-ad-edit.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "wraith-ad-edit.png"; path = "resources/wraith-ad-edit.png"; sourceTree = SOURCE_ROOT; };
 		2F816C3424BD61FB00F3C19A /* 2048-demo-bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "2048-demo-bg.png"; path = "resources/2048-demo-bg.png"; sourceTree = SOURCE_ROOT; };
@@ -78,8 +78,8 @@
 				2F1E637E24B3DE73000499C0 /* AppDelegate.m */,
 				2F1E638024B3DE73000499C0 /* SceneDelegate.h */,
 				2F1E638124B3DE73000499C0 /* SceneDelegate.m */,
-				2F61051C24B78A5E00DA06F9 /* AdvertisementView.h */,
-				2F61051D24B78A5E00DA06F9 /* AdvertisementView.m */,
+				2F61051C24B78A5E00DA06F9 /* FMMAdvertisementView.h */,
+				2F61051D24B78A5E00DA06F9 /* FMMAdvertisementView.m */,
 				2F1E638324B3DE73000499C0 /* ViewController.h */,
 				2F1E638424B3DE73000499C0 /* ViewController.m */,
 				2F1E638624B3DE73000499C0 /* Main.storyboard */,
@@ -174,7 +174,7 @@
 				2F1E638524B3DE73000499C0 /* ViewController.m in Sources */,
 				2F1E637F24B3DE73000499C0 /* AppDelegate.m in Sources */,
 				2F1E639024B3DE7A000499C0 /* main.m in Sources */,
-				2F61051E24B78A5E00DA06F9 /* AdvertisementView.m in Sources */,
+				2F61051E24B78A5E00DA06F9 /* FMMAdvertisementView.m in Sources */,
 				2F1E638224B3DE73000499C0 /* SceneDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
