@@ -44,7 +44,11 @@
 - (id) initWithFrame:(CGRect)frame{
     self = [super initWithFrame:frame];
     if (self){
-        adImageView = [[UIImageView alloc] initWithFrame:CGRectMake(self.center.x-150, self.center.y-190, 300, 180)];
+        self.backgroundColor = [UIColor colorWithWhite:0.05 alpha:0.85];
+        
+        //adImageView = [[UIImageView alloc] initWithFrame:CGRectMake(self.center.x-150, self.center.y-190, 300, 180)];
+        adImageView = [[UIImageView alloc] initWithFrame:CGRectMake(7+20, (736-480)*0.8/2+25, 400*0.8, 480*0.8)]; // wraith settings. 
+        //414x736 iPhone7 logical resolution // temporary testing.
         [self addSubview:adImageView];
         
         // Advertisement Variables that are required whether motionManager is available or not
