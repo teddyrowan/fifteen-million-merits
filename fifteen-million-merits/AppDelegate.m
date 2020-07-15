@@ -2,8 +2,8 @@
 //  AppDelegate.m
 //  fifteen-million-merits
 //
-//  Created by TR on 2020-07-06.
-//  Copyright © 2020 edwardrowan. All rights reserved.
+//  Authored by Teddy Rowan
+//  Copyright © 2020 teddyrowan. All rights reserved.
 //
 
 #import "AppDelegate.h"
