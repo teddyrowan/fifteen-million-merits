@@ -18,17 +18,17 @@ Once your properties are set add the advertisement to your view and call the sta
 
 ```objective-c
 FMMAdvertisementView *your_ad = [[FMMAdvertisementView alloc] initWithFrame:example_superview.frame];
-your_ad.image = [UIImage imageNamed:@"example.png"];  // replace with your ad image
-your_ad.strictness = 50;                              // the default setting
-your_ad.duration = 15;                                // seconds
+your_ad.image      = [UIImage imageNamed:@"example.png"];  // replace with your ad image
+your_ad.strictness = 50;                                   // the default setting
+your_ad.duration   = 15;                                   // seconds
 [example_superview addSubview:your_ad];
-[your_ad startTimer];                                 // begin the mandatory watch countdown
+[your_ad startTimer];                                      // begin the mandatory watch countdown
 ```
 
 FMMAdvertisingView also has a parameter: (bool) techDemo that can be set which will push labels above the advertisement that display the orientation data both in principal aircraft coordinates and in spherical coordinates with a tilt parameter.
 
 ```objective-c
-your_ad.techDemo = YES;                               // should show orientation labels
+your_ad.techDemo   = YES;                                  // should show orientation labels
 ```
 
 ### Requirements:
