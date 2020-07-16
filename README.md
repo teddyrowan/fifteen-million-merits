@@ -6,7 +6,7 @@ This package FMMAdvertisementView is an accelerometer-based implementation of th
 
 Rather than tap into the front facing camera and use eye-tracking algorithms, this package takes a simpler, less computational, and less invasive approach by tapping into the device's accelerometers to capture the change in orientation of the device and detect likely changes in viewing. 
 
-[Demo Video](./resources/video_example.mov) || [Example Advertisement](./app-screens/ad_demo.PNG) || [Obstructed Demo](./app-screens/obstructed_demo.PNG)
+[Demo Video](./resources/fmm_demo.mov) || [Example Advertisement](./app-screens/ad_demo.PNG) || [Obstructed Demo](./app-screens/obstructed_demo.PNG)
 
 ## Getting Started
 

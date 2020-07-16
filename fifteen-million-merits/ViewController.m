@@ -48,7 +48,7 @@
     [advertisement setAdAudioWithName:@"wraith-ad-audio" andExtenstion:@"mp3"];     // audio to accompany the photo
     
     //advertisement.techDemo    = YES;
-    advertisement.strictness    = 100;      // dystopian settings
+    advertisement.strictness    = 50;      // dystopian settings
     advertisement.ad_duration   = 15;       // 15 seconds is really long for a photo ad, but better for testing purposes
     [self.view addSubview:advertisement];
     [advertisement startTimer];
