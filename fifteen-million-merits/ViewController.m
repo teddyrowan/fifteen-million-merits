@@ -44,9 +44,8 @@
 // Load up whatever advertisement you choose.
 - (void) loadAdvertisement:(UIButton*)sender{
     FMMAdvertisementView *advertisement = [[FMMAdvertisementView alloc] initWithFrame:self.view.frame];
-    
-    //advertisement.adImageView.image   = [UIImage imageNamed:@"mountain-dew.jpg"];
     advertisement.adImageView.image     = [UIImage imageNamed:@"wraith-ad-edit.png"];
+    [advertisement setAdAudioWithName:@"wraith-ad-audio" andExtenstion:@"mp3"];     // audio to accompany the photo
     
     //advertisement.techDemo    = YES;
     advertisement.strictness    = 100;      // dystopian settings

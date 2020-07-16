@@ -8,14 +8,14 @@
 
 #import "FMMAdvertisementView.h"
 #import <CoreMotion/CoreMotion.h>
-#import <AVFoundation/AVFoundation.h>
 
 @interface FMMAdvertisementView (){
     bool is_paused;                             // is the ad paused ie: is the view obstructed
     int capture_attempts;                       // retry limit for capturing non-zero accelerometer data
     int time_remaining;                         // how much advertisement time is remaining
+    bool ad_has_audio;                          //
     
-    AVAudioPlayer       *audioPlayer;           // play a noise (resume_viewing.mp3) whenever view is obstructed
+    AVAudioPlayer       *obstructedAudioPlayer; // play a noise (resume_viewing.mp3) whenever view is obstructed
     CMMotionManager     *motionManager;         // capture the accelerometer data
     UIImageView         *obstructed_view;       // view to hide the whole screen and alert the user
     UILabel *timerLabel;                        // label that counts down the ad time remaining
@@ -30,14 +30,14 @@
 @property (nonatomic) bool is_paused;
 @property (nonatomic) double pitch_0, roll_0, yaw_0, theta_0, phi_0, tilt_0;
 @property (nonatomic) int time_remaining, capture_attempts;
-@property (strong) AVAudioPlayer *audioPlayer;
+@property (strong) AVAudioPlayer *obstructedAudioPlayer;
 @property (nonatomic, strong) CMMotionManager *motionManager;
 @property (nonatomic, strong) UIImageView *obstructed_view;
 @property (nonatomic, strong) UILabel *timerLabel, *rollLabel, *pitchLabel, *yawLabel, *thetaLabel, *phiLabel, *tiltLabel;
 @end
 
 @implementation FMMAdvertisementView
-@synthesize adImageView, timerLabel, time_remaining, ad_duration, phi_0, pitch_0, theta_0, yaw_0, tilt_0, roll_0, is_paused, techDemo, rollLabel, pitchLabel, yawLabel, thetaLabel, phiLabel, tiltLabel, motionManager, capture_attempts, obstructed_view, audioPlayer, strictness;
+@synthesize adImageView, timerLabel, time_remaining, ad_duration, phi_0, pitch_0, theta_0, yaw_0, tilt_0, roll_0, is_paused, techDemo, rollLabel, pitchLabel, yawLabel, thetaLabel, phiLabel, tiltLabel, motionManager, capture_attempts, obstructed_view, obstructedAudioPlayer, strictness, adAudioPlayer;
 
 #pragma mark - Initialization and Essential Loading Methods
 
@@ -46,9 +46,9 @@
     if (self){
         self.backgroundColor = [UIColor colorWithWhite:0.05 alpha:0.85];
         
+        adImageView = [[UIImageView alloc] initWithFrame:CGRectMake(7+20, (736-480)*0.8/2+25, 400*0.8, 480*0.8)]; // wraith settings.
+        // Mountain-Dew.jpg original seettings
         //adImageView = [[UIImageView alloc] initWithFrame:CGRectMake(self.center.x-150, self.center.y-190, 300, 180)];
-        adImageView = [[UIImageView alloc] initWithFrame:CGRectMake(7+20, (736-480)*0.8/2+25, 400*0.8, 480*0.8)]; // wraith settings. 
-        //414x736 iPhone7 logical resolution // temporary testing.
         [self addSubview:adImageView];
         
         // Advertisement Variables that are required whether motionManager is available or not
@@ -69,10 +69,12 @@
         strictness          = 50;   // default
         is_paused           = NO;
         capture_attempts    = 0;
+        ad_has_audio        = NO;
         
         [self techDemoSetup];
         [self capture_0];
         [self loadObstructedView];
+        
         
         // Superloop for checking the orientation of the device and checking the participation of the user
         NSTimer *superloopTimer = [[NSTimer alloc] init];
@@ -122,8 +124,8 @@
     
     // Setup the obstructed view audio.
     NSURL *soundFileURL = [[NSBundle mainBundle] URLForResource:@"resume_viewing" withExtension:@"mp3"];
-    audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:soundFileURL error:nil];
-    audioPlayer.numberOfLoops = 0;
+    obstructedAudioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:soundFileURL error:nil];
+    obstructedAudioPlayer.numberOfLoops = 0;
 }
 
 // Bound the ad_duration minimum and also update the timerLabel immediately. 
@@ -135,6 +137,15 @@
     }
     
     timerLabel.text = [NSString stringWithFormat:@"%d", ad_duration];
+}
+
+// If the advertisement is a photo and has accompagnying audio, set that up.
+- (void) setAdAudioWithName:(NSString*)name andExtenstion:(NSString*)ext{
+    ad_has_audio        = YES;
+    NSURL *adAudioUrl   = [[NSBundle mainBundle] URLForResource:name withExtension:ext];
+    adAudioPlayer       = [[AVAudioPlayer alloc] initWithContentsOfURL:adAudioUrl error:nil];
+    [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback error: nil]; // play on silent.
+    adAudioPlayer.numberOfLoops = -1;
 }
 
 #pragma mark - Core Accelerometer Methods
@@ -234,8 +245,11 @@
     
     // Device orientation is acceptable, continue the ad
     [obstructed_view setHidden:YES];
-    if (audioPlayer.isPlaying){
-        [audioPlayer stop];
+    if (obstructedAudioPlayer.isPlaying){
+        [obstructedAudioPlayer stop];
+    }
+    if (!adAudioPlayer.isPlaying){
+        [adAudioPlayer play];
     }
     return YES;
 }
@@ -244,16 +258,20 @@
 
 // Play the view obstructed obnoxious high pitched sound w/ "Resume Viewing" in the background
 - (void) playSound{
-    if (!audioPlayer.isPlaying){
+    if (!obstructedAudioPlayer.isPlaying){
         [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback error: nil]; // play on silent.
-        [audioPlayer play];
+        [adAudioPlayer stop];
+        [obstructedAudioPlayer play];
     }
 }
 
 // Begin the ad timer countdown.
 - (void) startTimer{
     time_remaining = ad_duration;
-    
+    if (ad_has_audio){
+        [adAudioPlayer play];
+    }
+        
     NSTimer *countdownTimer = [[NSTimer alloc] init];
     countdownTimer = [NSTimer scheduledTimerWithTimeInterval:1.0
                                                       target:self
@@ -292,6 +310,7 @@
 // Close the advertisement.
 - (void)terminateAd{
     NSLog(@"Terminating Advertisement");
+    [adAudioPlayer stop];
     [self removeFromSuperview];
 }
 

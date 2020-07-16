@@ -1,12 +1,12 @@
 # Fifteen Million Merits / FMMAdvertisementView
 
-This package FMMAdvertisementView is an accelerometer-based implementation of the dystopian advertising scheme featured in S01E02 of Black Mirror. The goal of the package is to detect user participation in watching pushed advertisements.
+This package FMMAdvertisementView is an accelerometer-based implementation of the dystopian advertising scheme featured in S01E02 of Black Mirror. The goal of the package is to detect user participation in watching pushed advertisements and pause the advertisement while the user is not participating. This should in theory increase the effectiveness of advertisements and increase the CPM towards app creators. 
 
-[Black Mirror Example](./resources/screens/obstructed-view-1.png)
+[Black Mirror Screencap](./resources/screens/obstructed-view-1.png)
 
 Rather than tap into the front facing camera and use eye-tracking algorithms, this package takes a simpler, less computational, and less invasive approach by tapping into the device's accelerometers to capture the change in orientation of the device and detect likely changes in viewing. 
 
-[Example Advertisement](./app-screens/ad_demo.PNG) || [Obstructed Demo](./app-screens/obstructed_demo.PNG)
+[Demo Video](./resources/video_example.mov) || [Example Advertisement](./app-screens/ad_demo.PNG) || [Obstructed Demo](./app-screens/obstructed_demo.PNG)
 
 ## Getting Started
 
@@ -17,18 +17,18 @@ For your own application, create a FMMAdvertisementView object and set the image
 Once your properties are set add the advertisement to your view and call the startTimer() method for the FMMAdvertisingView object. 
 
 ```objective-c
-FMMAdvertisementView *your_ad = [[FMMAdvertisementView alloc] initWithFrame:example_superview.frame];
-your_ad.image      = [UIImage imageNamed:@"example.png"];  // replace with your ad image
-your_ad.strictness = 50;                                   // the default setting
-your_ad.duration   = 15;                                   // seconds
+FMMAdvertisementView *your_ad  = [[FMMAdvertisementView alloc] initWithFrame:example_superview.frame];
+your_ad.adImageView.image      = [UIImage imageNamed:@"example.png"];  // replace with your ad image
+your_ad.strictness             = 50;                                   // the default setting [0,100]
+your_ad.duration               = 15;                                   // seconds
 [example_superview addSubview:your_ad];
-[your_ad startTimer];                                      // begin the mandatory watch countdown
+[your_ad startTimer];                                                  // begin watch countdown
 ```
 
-FMMAdvertisingView also has a parameter: (bool) techDemo that can be set which will push labels above the advertisement that display the orientation data both in principal aircraft coordinates and in spherical coordinates with a tilt parameter.
+FMMAdvertisingView also has a parameter: (bool)techDemo that can be set which will push labels above the advertisement that display the orientation data both in principal aircraft coordinates and in spherical coordinates with a tilt parameter.
 
 ```objective-c
-your_ad.techDemo   = YES;                                  // should show orientation labels
+your_ad.techDemo              = YES;                                  // should show orientation labels
 ```
 
 ### Requirements:
