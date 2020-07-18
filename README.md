@@ -12,7 +12,7 @@ Rather than tap into the front facing camera and use eye-tracking algorithms, th
 
 [A video demo is available on Vimeo by clicking this link.](https://vimeo.com/439452030/6092b50826)
 
-![Ad Demo](./app-screens/ad_demo.png "Ad Demo")  ![Obstructed Demo](./app-screens/obstructed_demo.png "Obstructed Demo")
+![Ad Demo](./app-screens/ad_demo.PNG "Ad Demo")  ![Obstructed Demo](./app-screens/obstructed_demo.PNG "Obstructed Demo")
 
 ## Getting Started
 
