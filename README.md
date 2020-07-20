@@ -1,6 +1,6 @@
 # Fifteen Million Merits / FMMAdvertisementView
 
-This package FMMAdvertisementView is an accelerometer-based implementation of the dystopian advertising scheme featured in S01E02 of Black Mirror. The goal of the package is to detect user participation in watching pushed advertisements and pause the advertisement while the user is not participating. This should in theory increase the effectiveness of advertisements and increase the CPM towards app creators. 
+This package FMMAdvertisementView is an accelerometer-based implementation of the dystopian advertising scheme featured in S01E02 of Black Mirror. The goal of the package is to detect user participation in watching pushed advertisements and pause the advertisement while the user is not participating.
 
 That said, this is designed as a dystopian tech-demo not for commercial use. 
 
@@ -8,15 +8,12 @@ That said, this is designed as a dystopian tech-demo not for commercial use.
 
 Rather than tap into the front facing camera and use eye-tracking algorithms, this package takes a simpler, less computational, and less invasive approach by tapping into the device's accelerometers to capture the change in orientation of the device and detect likely changes in viewing. 
 
-### The following screens are a preview of the demo application
 
-[A video demo is available on Vimeo by clicking this link.](https://vimeo.com/439452030/6092b50826)
-
-![Ad Demo](./app-screens/ad_demo.PNG "Ad Demo")  ![Obstructed Demo](./app-screens/obstructed_demo.PNG "Obstructed Demo")
-
-## Getting Started
+### Getting Started
 
 A quick demo project is attached: a simple mockup of a 2048 game with a button in the bottom right corner to launch a Black Mirror themed Wraith Girls advertisement. 
+
+[A video of the demo is available on Vimeo.](https://vimeo.com/440092448/d45417e215)
 
 For your own application, create a FMMAdvertisementView object and set the image (video advertisement support coming soon) through the adImageView property. You are then able to set a custom mandatory watch length by modifying the ad_duration [seconds] parameter and you can set the strictness parameter [0,100] to determine how little of a change in the orientation data will trigger the obstructed view alert. If desired you also have the ability to set an audio backing to your ad that will pause during view obstructions. 
 
@@ -38,15 +35,18 @@ FMMAdvertisingView also has a parameter: (bool)techDemo that can be set which wi
 your_ad.techDemo              = YES;	// should show orientation labels
 ```
 
+![Ad Demo](./resources/app-screens/ad_demo.PNG "Ad Demo")  ![Obstructed Demo](./resources/app-screens/obstructed_demo.PNG "Obstructed Demo")
+
+
 ### Requirements:
 
 CoreMotion: deviceMotionAvailable: iOS 4.0+
 
 
-## Additional Notes
+### Additional Notes
 
 I haven't checked explicitly, but I imagine that advertising in this fashion would result in App Rejection by Apple. This package is designed as a dystopian tech demo, not for commercial use. 
 
-## Authors
+### Authors
 
 * **Teddy Rowan**
