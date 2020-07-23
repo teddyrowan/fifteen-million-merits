@@ -13,7 +13,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface FMMAdvertisementView : UIView
 {
-    UIImageView *adImageView;                   // the image (video support to be added) for the advertisement
     AVAudioPlayer  *adAudioPlayer;              // play a noise (resume_viewing.mp3) whenever view is obstructed
     
     int ad_duration;                            // total ad duration before the user can close it
@@ -24,7 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) double strictness;
 @property (nonatomic) int ad_duration;
 @property (nonatomic, strong) AVAudioPlayer *adAudioPlayer;
-@property (nonatomic, strong) UIImageView *adImageView;
 
 - (void) playSound;         // play the sound when the user's view is obstructed.
 - (void) capture_0;         // capture the initial heading values for the advertisement.
@@ -34,6 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void) setStrictness:(double)value;                               // override the strictness setter method to bound it between 0-100
 - (void) setTechDemo:(bool)on_status;                               // override the setter for tech-demo to view/hide the axislabels
 - (void) setAd_duration:(int)value;                                 // override tha ad_duration setter to force positive and update label.
+- (void) setAdImage:(UIImage*)image;                                // set the image for the advertisement. + resize the imageView to match it.
 
 - (void) setAdAudioWithName:(NSString*)name andExtenstion:(NSString*)ext;
 

@@ -44,14 +44,15 @@
 // Load up whatever advertisement you choose.
 - (void) loadAdvertisement:(UIButton*)sender{
     FMMAdvertisementView *advertisement = [[FMMAdvertisementView alloc] initWithFrame:self.view.frame];
-    advertisement.adImageView.image     = [UIImage imageNamed:@"wraith-ad-edit.png"];
+    [advertisement setAdImage:[UIImage imageNamed:@"wraith-ad-edit.png"]];          // set the image + autoresize
     [advertisement setAdAudioWithName:@"wraith-ad-audio" andExtenstion:@"mp3"];     // audio to accompany the photo
     
     //advertisement.techDemo    = YES;
-    advertisement.strictness    = 50;      // dystopian settings
+    advertisement.strictness    = 75;       // dystopian settings
     advertisement.ad_duration   = 15;       // 15 seconds is really long for a photo ad, but better for testing purposes
     [self.view addSubview:advertisement];
     [advertisement startTimer];
+    
 }
 
 @end

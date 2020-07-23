@@ -21,10 +21,10 @@ Once your properties are set add the advertisement to your view and call the sta
 
 ```objective-c
 FMMAdvertisementView *your_ad  = [[FMMAdvertisementView alloc] initWithFrame:example_superview.frame];
-your_ad.adImageView.image      = [UIImage imageNamed:@"example.png"];  // replace with your ad image
+[your_ad setAdImage:[UIImage imageNamed:@"example.png"]];              // load the image for your ad
+[your_ad setAdAudioWithName:@"example_audio" andExtension:@"mp3"];     // audio backing for your ad
 your_ad.strictness             = 50;                                   // the default setting [0,100]
 your_ad.duration               = 15;                                   // seconds
-[your_ad setAdAudioWithName:@"example_audio" andExtension:@"mp3"];     // audio backing for your ad
 [example_superview addSubview:your_ad];
 [your_ad startTimer];                                                  // begin watch countdown
 ```
