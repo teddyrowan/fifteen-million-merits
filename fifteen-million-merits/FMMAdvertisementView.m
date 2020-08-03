@@ -18,8 +18,10 @@
     AVAudioPlayer       *obstructedAudioPlayer; // play a noise (resume_viewing.mp3) whenever view is obstructed
     CMMotionManager     *motionManager;         // capture the accelerometer data
     UIImageView         *adImageView;           // the image (video support to be added) for the advertisement
+    UIImageView         *arrowPhi;              // arrow to guide user back for phi direction
+    UIImageView         *arrowTheta;            // arrow to guide user back for theta direction
     UIImageView         *obstructed_view;       // view to hide the whole screen and alert the user
-    UILabel *timerLabel;                        // label that counts down the ad time remaining
+    UILabel             *timerLabel;            // label that counts down the ad time remaining
     
     double pitch_0, roll_0, yaw_0;              // initial values for principal aircraft coordinates
     double theta_0, phi_0, tilt_0;              // initial values for spherical coordinates
@@ -33,12 +35,12 @@
 @property (nonatomic) int time_remaining, capture_attempts;
 @property (strong) AVAudioPlayer *obstructedAudioPlayer;
 @property (nonatomic, strong) CMMotionManager *motionManager;
-@property (nonatomic, strong) UIImageView *obstructed_view, *adImageView;
+@property (nonatomic, strong) UIImageView *obstructed_view, *adImageView, *arrowPhi, *arrowTheta;
 @property (nonatomic, strong) UILabel *timerLabel, *rollLabel, *pitchLabel, *yawLabel, *thetaLabel, *phiLabel, *tiltLabel;
 @end
 
 @implementation FMMAdvertisementView
-@synthesize adImageView, timerLabel, time_remaining, ad_duration, phi_0, pitch_0, theta_0, yaw_0, tilt_0, roll_0, is_paused, techDemo, rollLabel, pitchLabel, yawLabel, thetaLabel, phiLabel, tiltLabel, motionManager, capture_attempts, obstructed_view, obstructedAudioPlayer, strictness, adAudioPlayer;
+@synthesize adImageView, timerLabel, time_remaining, ad_duration, phi_0, pitch_0, theta_0, yaw_0, tilt_0, roll_0, is_paused, techDemo, rollLabel, pitchLabel, yawLabel, thetaLabel, phiLabel, tiltLabel, motionManager, capture_attempts, obstructed_view, obstructedAudioPlayer, strictness, adAudioPlayer, arrowPhi, arrowTheta;
 
 #pragma mark - Initialization and Essential Loading Methods
 
@@ -119,6 +121,14 @@
     resumeLabel.layer.borderWidth   = 3;
     resumeLabel.backgroundColor     = [UIColor colorWithRed:1.0 green:0.5 blue:0.66 alpha:0.80];
     [obstructed_view addSubview:resumeLabel];
+    
+    arrowTheta = [[UIImageView alloc] initWithFrame:CGRectMake(0, obstructed_view.frame.size.height/2-25, 65, 50)];
+    arrowTheta.image = [UIImage imageNamed:@"arrow_left_default"];
+    [obstructed_view addSubview:arrowTheta];
+    
+    arrowPhi = [[UIImageView alloc] initWithFrame:CGRectMake(obstructed_view.frame.size.width/2 - 37, 0, 65, 50)];
+    arrowPhi.image = [UIImage imageNamed:@"arrow_left_default"];
+    [obstructed_view addSubview:arrowPhi];
     
     // Setup the obstructed view audio.
     NSURL *soundFileURL = [[NSBundle mainBundle] URLForResource:@"resume_viewing" withExtension:@"mp3"];
@@ -256,7 +266,16 @@
         is_paused = YES;
         [obstructed_view setHidden:NO];
         [self playSound];
-        return NO;
+        [arrowPhi setHidden:NO];
+        if ([[currentHeadings objectForKey:@"phi"] doubleValue] > phi_0){
+            arrowPhi.layer.transform = CATransform3DMakeRotation(-90*3.1415/180, 0, 0, 1.0);
+            arrowPhi.frame = CGRectMake(obstructed_view.frame.size.width/2 - 37, obstructed_view.frame.size.height - arrowPhi.frame.size.height, arrowPhi.frame.size.width, arrowPhi.frame.size.height);
+        } else {
+            arrowPhi.layer.transform = CATransform3DMakeRotation(-270*3.1415/180, 0, 0, 1.0);
+            arrowPhi.frame = CGRectMake(obstructed_view.frame.size.width/2 - 37, 0, arrowPhi.frame.size.width, arrowPhi.frame.size.height);
+        }
+    } else {
+        [arrowPhi setHidden:YES];
     }
     
     if (fabs([[currentHeadings objectForKey:@"theta"] doubleValue] - theta_0) > thetaLimit){
@@ -264,6 +283,19 @@
         is_paused = YES;
         [obstructed_view setHidden:NO];
         [self playSound];
+        [arrowTheta setHidden:NO];
+        if ([[currentHeadings objectForKey:@"theta"] doubleValue] > theta_0){
+            arrowTheta.layer.transform = CATransform3DMakeRotation(-180*3.1415/180, 0, 0, 1.0);
+            arrowTheta.frame = CGRectMake(obstructed_view.frame.size.width-arrowTheta.frame.size.width, arrowTheta.frame.origin.y, arrowTheta.frame.size.width, arrowTheta.frame.size.height);
+        } else {
+            arrowTheta.layer.transform = CATransform3DMakeRotation(0, 0, 0, 1.0);
+            arrowTheta.frame = CGRectMake(0, arrowTheta.frame.origin.y, arrowTheta.frame.size.width, arrowTheta.frame.size.height);
+        }
+    } else {
+        [arrowTheta setHidden:YES];
+    }
+    
+    if (is_paused){ // move out here so that both arrows can be visible
         return NO;
     }
     

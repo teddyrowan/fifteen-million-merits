@@ -13,12 +13,15 @@
     bool is_paused;                             // is the ad paused ie: is the view obstructed
     int capture_attempts;                       // retry limit for capturing non-zero accelerometer data
     int time_remaining;                         // how much advertisement time is remaining
-    bool ad_has_audio;                          //
+    bool ad_has_audio;                          // does the advertisement have audio
     
     AVAudioPlayer       *obstructedAudioPlayer; // play a noise (resume_viewing.mp3) whenever view is obstructed
     CMMotionManager     *motionManager;         // capture the accelerometer data
+    UIImageView         *adImageView;           // the image (video support to be added) for the advertisement
+    UIImageView         *arrowPhi;              // arrow to guide user back for phi direction
+    UIImageView         *arrowTheta;            // arrow to guide user back for theta direction
     UIImageView         *obstructed_view;       // view to hide the whole screen and alert the user
-    UILabel *timerLabel;                        // label that counts down the ad time remaining
+    UILabel             *timerLabel;            // label that counts down the ad time remaining
     
     double pitch_0, roll_0, yaw_0;              // initial values for principal aircraft coordinates
     double theta_0, phi_0, tilt_0;              // initial values for spherical coordinates
@@ -32,12 +35,12 @@
 @property (nonatomic) int time_remaining, capture_attempts;
 @property (strong) AVAudioPlayer *obstructedAudioPlayer;
 @property (nonatomic, strong) CMMotionManager *motionManager;
-@property (nonatomic, strong) UIImageView *obstructed_view;
+@property (nonatomic, strong) UIImageView *obstructed_view, *adImageView, *arrowPhi, *arrowTheta;
 @property (nonatomic, strong) UILabel *timerLabel, *rollLabel, *pitchLabel, *yawLabel, *thetaLabel, *phiLabel, *tiltLabel;
 @end
 
 @implementation FMMAdvertisementView
-@synthesize adImageView, timerLabel, time_remaining, ad_duration, phi_0, pitch_0, theta_0, yaw_0, tilt_0, roll_0, is_paused, techDemo, rollLabel, pitchLabel, yawLabel, thetaLabel, phiLabel, tiltLabel, motionManager, capture_attempts, obstructed_view, obstructedAudioPlayer, strictness, adAudioPlayer;
+@synthesize adImageView, timerLabel, time_remaining, ad_duration, phi_0, pitch_0, theta_0, yaw_0, tilt_0, roll_0, is_paused, techDemo, rollLabel, pitchLabel, yawLabel, thetaLabel, phiLabel, tiltLabel, motionManager, capture_attempts, obstructed_view, obstructedAudioPlayer, strictness, adAudioPlayer, arrowPhi, arrowTheta;
 
 #pragma mark - Initialization and Essential Loading Methods
 
@@ -46,9 +49,7 @@
     if (self){
         self.backgroundColor = [UIColor colorWithWhite:0.05 alpha:0.85];
         
-        adImageView = [[UIImageView alloc] initWithFrame:CGRectMake(7+20, (736-480)*0.8/2+25, 400*0.8, 480*0.8)]; // wraith settings.
-        // Mountain-Dew.jpg original seettings
-        //adImageView = [[UIImageView alloc] initWithFrame:CGRectMake(self.center.x-150, self.center.y-190, 300, 180)];
+        adImageView = [[UIImageView alloc] init]; // frame to be resized when image is added.
         [self addSubview:adImageView];
         
         // Advertisement Variables that are required whether motionManager is available or not
@@ -61,8 +62,8 @@
             motionManager.deviceMotionUpdateInterval = 1.0/70.0;
             [motionManager startDeviceMotionUpdates];
         } else {
-            // motionManager is the whole point of the class, but if the device doesn't support it then a regular ad should still play.
-            return self;
+            NSLog(@"deviceMotion Is Not Available"); // Simulator.
+            return self; // play a normal ad if there is no orientation detection support
         }
         
         // Variables / setup that are only required if motionManager is available
@@ -74,7 +75,6 @@
         [self techDemoSetup];
         [self capture_0];
         [self loadObstructedView];
-        
         
         // Superloop for checking the orientation of the device and checking the participation of the user
         NSTimer *superloopTimer = [[NSTimer alloc] init];
@@ -122,6 +122,14 @@
     resumeLabel.backgroundColor     = [UIColor colorWithRed:1.0 green:0.5 blue:0.66 alpha:0.80];
     [obstructed_view addSubview:resumeLabel];
     
+    arrowTheta = [[UIImageView alloc] initWithFrame:CGRectMake(0, obstructed_view.frame.size.height/2-25, 65, 50)];
+    arrowTheta.image = [UIImage imageNamed:@"arrow_left_default"];
+    [obstructed_view addSubview:arrowTheta];
+    
+    arrowPhi = [[UIImageView alloc] initWithFrame:CGRectMake(obstructed_view.frame.size.width/2 - 37, 0, 65, 50)];
+    arrowPhi.image = [UIImage imageNamed:@"arrow_left_default"];
+    [obstructed_view addSubview:arrowPhi];
+    
     // Setup the obstructed view audio.
     NSURL *soundFileURL = [[NSBundle mainBundle] URLForResource:@"resume_viewing" withExtension:@"mp3"];
     obstructedAudioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:soundFileURL error:nil];
@@ -146,6 +154,32 @@
     adAudioPlayer       = [[AVAudioPlayer alloc] initWithContentsOfURL:adAudioUrl error:nil];
     [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback error: nil]; // play on silent.
     adAudioPlayer.numberOfLoops = -1;
+}
+
+// Set the image for the advertisement and rescale the size of the adImageView to the fill the view.
+- (void) setAdImage:(UIImage*)image{
+    adImageView.image = image;
+    double coverage_percent = 0.98;
+    
+    // now resize the imageview
+    CGSize image_size = adImageView.image.size; // okay this is the size of the image.
+    CGSize frame_size = self.frame.size;
+    
+    // Find out whether the image is vertically or horizontally constrained.
+    bool isVertConstrained = YES;
+    if (image_size.width/frame_size.width > image_size.height/frame_size.height){
+        isVertConstrained = NO;
+    }
+    
+    // Now resize the image to the bounds of the view while keeping the proportions
+    if (isVertConstrained){
+        adImageView.frame = CGRectMake(0, 0, image_size.width/image_size.height*self.frame.size.height*coverage_percent, self.frame.size.height*coverage_percent);
+    } else {
+        adImageView.frame = CGRectMake(0, 0, frame_size.width*coverage_percent, image_size.height/image_size.width*frame_size.width*coverage_percent);
+    }
+    
+    adImageView.center = self.center;
+    timerLabel.frame = CGRectMake(adImageView.frame.size.width-20, 0, 20, 20);
 }
 
 #pragma mark - Core Accelerometer Methods
@@ -232,7 +266,16 @@
         is_paused = YES;
         [obstructed_view setHidden:NO];
         [self playSound];
-        return NO;
+        [arrowPhi setHidden:NO];
+        if ([[currentHeadings objectForKey:@"phi"] doubleValue] > phi_0){
+            arrowPhi.layer.transform = CATransform3DMakeRotation(-90*3.1415/180, 0, 0, 1.0);
+            arrowPhi.frame = CGRectMake(obstructed_view.frame.size.width/2 - 37, obstructed_view.frame.size.height - arrowPhi.frame.size.height, arrowPhi.frame.size.width, arrowPhi.frame.size.height);
+        } else {
+            arrowPhi.layer.transform = CATransform3DMakeRotation(-270*3.1415/180, 0, 0, 1.0);
+            arrowPhi.frame = CGRectMake(obstructed_view.frame.size.width/2 - 37, 0, arrowPhi.frame.size.width, arrowPhi.frame.size.height);
+        }
+    } else {
+        [arrowPhi setHidden:YES];
     }
     
     if (fabs([[currentHeadings objectForKey:@"theta"] doubleValue] - theta_0) > thetaLimit){
@@ -240,6 +283,19 @@
         is_paused = YES;
         [obstructed_view setHidden:NO];
         [self playSound];
+        [arrowTheta setHidden:NO];
+        if ([[currentHeadings objectForKey:@"theta"] doubleValue] > theta_0){
+            arrowTheta.layer.transform = CATransform3DMakeRotation(-180*3.1415/180, 0, 0, 1.0);
+            arrowTheta.frame = CGRectMake(obstructed_view.frame.size.width-arrowTheta.frame.size.width, arrowTheta.frame.origin.y, arrowTheta.frame.size.width, arrowTheta.frame.size.height);
+        } else {
+            arrowTheta.layer.transform = CATransform3DMakeRotation(0, 0, 0, 1.0);
+            arrowTheta.frame = CGRectMake(0, arrowTheta.frame.origin.y, arrowTheta.frame.size.width, arrowTheta.frame.size.height);
+        }
+    } else {
+        [arrowTheta setHidden:YES];
+    }
+    
+    if (is_paused){ // move out here so that both arrows can be visible
         return NO;
     }
     
