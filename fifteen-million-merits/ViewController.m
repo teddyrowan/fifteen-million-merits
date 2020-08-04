@@ -44,7 +44,7 @@
 // Load up whatever advertisement you choose.
 - (void) loadAdvertisement:(UIButton*)sender{
     FMMAdvertisementView *advertisement = [[FMMAdvertisementView alloc] initWithFrame:self.view.frame];
-    [advertisement setAdImage:[UIImage imageNamed:@"wraith-ad-edit.png"]];          // set the image + autoresize
+    [advertisement setAdImage:[UIImage imageNamed:@"wraith-ad-edit-logical.png"]];  // set the image + autoresize
     [advertisement setAdAudioWithName:@"wraith-ad-audio" andExtenstion:@"mp3"];     // audio to accompany the photo
     
     //advertisement.techDemo    = YES;

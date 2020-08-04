@@ -163,7 +163,7 @@
     
     // now resize the imageview
     CGSize image_size = adImageView.image.size; // okay this is the size of the image.
-    CGSize frame_size = self.frame.size;
+    CGSize frame_size = CGSizeMake(self.frame.size.width, self.frame.size.height*0.95); // don't allow to fully cover top
     
     // Find out whether the image is vertically or horizontally constrained.
     bool isVertConstrained = YES;
@@ -173,7 +173,7 @@
     
     // Now resize the image to the bounds of the view while keeping the proportions
     if (isVertConstrained){
-        adImageView.frame = CGRectMake(0, 0, image_size.width/image_size.height*self.frame.size.height*coverage_percent, self.frame.size.height*coverage_percent);
+        adImageView.frame = CGRectMake(0, 0, image_size.width/image_size.height*frame_size.height*coverage_percent, frame_size.height*coverage_percent);
     } else {
         adImageView.frame = CGRectMake(0, 0, frame_size.width*coverage_percent, image_size.height/image_size.width*frame_size.width*coverage_percent);
     }

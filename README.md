@@ -4,7 +4,7 @@ This package FMMAdvertisementView is an accelerometer-based implementation of th
 
 That said, this is designed as a dystopian tech-demo not for commercial use. 
 
-![alt text](./resources/screens/obstructed-view-1.png "Title")
+![alt text](./repo-resources/screens/obstructed-view-1.png "Title")
 
 Rather than tap into the front facing camera and use eye-tracking algorithms, this package takes a simpler, less computational, and less invasive approach by tapping into the device's accelerometers to capture the change in orientation of the device and detect likely changes in viewing. 
 
@@ -35,7 +35,7 @@ FMMAdvertisingView also has a parameter: (bool)techDemo that can be set which wi
 your_ad.techDemo              = YES;	// should show orientation labels
 ```
 
-![Ad Demo](./resources/app-screens/ad_demo.PNG "Ad Demo")  ![Obstructed Demo](./resources/app-screens/obstructed_demo.PNG "Obstructed Demo")
+![Ad Demo](./repo-resources/app-screens/ad_demo.PNG "Ad Demo")  ![Obstructed Demo](./repo-resources/app-screens/obstructed_demo.PNG "Obstructed Demo")
 
 
 ### Requirements:

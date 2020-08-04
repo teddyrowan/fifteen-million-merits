@@ -15,13 +15,13 @@
 		2F1E638D24B3DE7A000499C0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2F1E638B24B3DE7A000499C0 /* LaunchScreen.storyboard */; };
 		2F1E639024B3DE7A000499C0 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F1E638F24B3DE7A000499C0 /* main.m */; };
 		2F61051E24B78A5E00DA06F9 /* FMMAdvertisementView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F61051D24B78A5E00DA06F9 /* FMMAdvertisementView.m */; };
-		2F61D4BE24BFF3270071147A /* wraith-ad-audio.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 2F61D4BD24BFF3270071147A /* wraith-ad-audio.mp3 */; };
-		2F67865224D7906A0015ABC4 /* arrow_left_default.png in Resources */ = {isa = PBXBuildFile; fileRef = 2F67865124D7906A0015ABC4 /* arrow_left_default.png */; };
-		2F7427CF24BA8AB100E1A08F /* resume_viewing.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 2F7427CE24BA8AB100E1A08F /* resume_viewing.mp3 */; };
-		2F816C3324BD5E4100F3C19A /* wraith-ad-edit.png in Resources */ = {isa = PBXBuildFile; fileRef = 2F816C3224BD5E4100F3C19A /* wraith-ad-edit.png */; };
-		2F816C3524BD61FB00F3C19A /* 2048-demo-bg.png in Resources */ = {isa = PBXBuildFile; fileRef = 2F816C3424BD61FB00F3C19A /* 2048-demo-bg.png */; };
-		2F85A15824BF607A00DE8FCD /* blocked_view.png in Resources */ = {isa = PBXBuildFile; fileRef = 2F85A15624BF607A00DE8FCD /* blocked_view.png */; };
-		2F85A15924BF607A00DE8FCD /* mountain-dew.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 2F85A15724BF607A00DE8FCD /* mountain-dew.jpg */; };
+		2FB3C85E24D902110043CFF6 /* blocked_view.png in Resources */ = {isa = PBXBuildFile; fileRef = 2FB3C85D24D902100043CFF6 /* blocked_view.png */; };
+		2FB3C86024D9021A0043CFF6 /* arrow_left_default.png in Resources */ = {isa = PBXBuildFile; fileRef = 2FB3C85F24D9021A0043CFF6 /* arrow_left_default.png */; };
+		2FB3C86224D902260043CFF6 /* resume_viewing.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 2FB3C86124D902260043CFF6 /* resume_viewing.mp3 */; };
+		2FB3C86824D9025C0043CFF6 /* wraith-ad-audio.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 2FB3C86724D9025C0043CFF6 /* wraith-ad-audio.mp3 */; };
+		2FB3C86A24D902680043CFF6 /* mountain-dew.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 2FB3C86924D902680043CFF6 /* mountain-dew.jpg */; };
+		2FB3C86C24D9026E0043CFF6 /* 2048-demo-bg.png in Resources */ = {isa = PBXBuildFile; fileRef = 2FB3C86B24D9026E0043CFF6 /* 2048-demo-bg.png */; };
+		2FB3C86E24D9028B0043CFF6 /* wraith-ad-edit-logical.png in Resources */ = {isa = PBXBuildFile; fileRef = 2FB3C86D24D9028B0043CFF6 /* wraith-ad-edit-logical.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,13 +39,13 @@
 		2F1E638F24B3DE7A000499C0 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		2F61051C24B78A5E00DA06F9 /* FMMAdvertisementView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FMMAdvertisementView.h; sourceTree = "<group>"; };
 		2F61051D24B78A5E00DA06F9 /* FMMAdvertisementView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FMMAdvertisementView.m; sourceTree = "<group>"; };
-		2F61D4BD24BFF3270071147A /* wraith-ad-audio.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = "wraith-ad-audio.mp3"; path = "resources/wraith-ad-audio.mp3"; sourceTree = SOURCE_ROOT; };
-		2F67865124D7906A0015ABC4 /* arrow_left_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = arrow_left_default.png; path = resources/arrow_left_default.png; sourceTree = SOURCE_ROOT; };
-		2F7427CE24BA8AB100E1A08F /* resume_viewing.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = resume_viewing.mp3; path = resources/resume_viewing.mp3; sourceTree = SOURCE_ROOT; };
-		2F816C3224BD5E4100F3C19A /* wraith-ad-edit.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "wraith-ad-edit.png"; path = "resources/wraith-ad-edit.png"; sourceTree = SOURCE_ROOT; };
-		2F816C3424BD61FB00F3C19A /* 2048-demo-bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "2048-demo-bg.png"; path = "resources/2048-demo-bg.png"; sourceTree = SOURCE_ROOT; };
-		2F85A15624BF607A00DE8FCD /* blocked_view.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = blocked_view.png; path = resources/blocked_view.png; sourceTree = SOURCE_ROOT; };
-		2F85A15724BF607A00DE8FCD /* mountain-dew.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "mountain-dew.jpg"; path = "resources/mountain-dew.jpg"; sourceTree = SOURCE_ROOT; };
+		2FB3C85D24D902100043CFF6 /* blocked_view.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = blocked_view.png; path = "app-resources/blocked_view.png"; sourceTree = SOURCE_ROOT; };
+		2FB3C85F24D9021A0043CFF6 /* arrow_left_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = arrow_left_default.png; path = "app-resources/arrow_left_default.png"; sourceTree = SOURCE_ROOT; };
+		2FB3C86124D902260043CFF6 /* resume_viewing.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = resume_viewing.mp3; path = "app-resources/resume_viewing.mp3"; sourceTree = SOURCE_ROOT; };
+		2FB3C86724D9025C0043CFF6 /* wraith-ad-audio.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = "wraith-ad-audio.mp3"; path = "repo-resources/wraith-ad-audio.mp3"; sourceTree = SOURCE_ROOT; };
+		2FB3C86924D902680043CFF6 /* mountain-dew.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "mountain-dew.jpg"; path = "repo-resources/mountain-dew.jpg"; sourceTree = SOURCE_ROOT; };
+		2FB3C86B24D9026E0043CFF6 /* 2048-demo-bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "2048-demo-bg.png"; path = "repo-resources/2048-demo-bg.png"; sourceTree = SOURCE_ROOT; };
+		2FB3C86D24D9028B0043CFF6 /* wraith-ad-edit-logical.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "wraith-ad-edit-logical.png"; path = "repo-resources/wraith-ad-edit-logical.png"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,13 +91,13 @@
 				2F1E638B24B3DE7A000499C0 /* LaunchScreen.storyboard */,
 				2F1E638E24B3DE7A000499C0 /* Info.plist */,
 				2F1E638F24B3DE7A000499C0 /* main.m */,
-				2F816C3424BD61FB00F3C19A /* 2048-demo-bg.png */,
-				2F67865124D7906A0015ABC4 /* arrow_left_default.png */,
-				2F85A15624BF607A00DE8FCD /* blocked_view.png */,
-				2F85A15724BF607A00DE8FCD /* mountain-dew.jpg */,
-				2F816C3224BD5E4100F3C19A /* wraith-ad-edit.png */,
-				2F61D4BD24BFF3270071147A /* wraith-ad-audio.mp3 */,
-				2F7427CE24BA8AB100E1A08F /* resume_viewing.mp3 */,
+				2FB3C86B24D9026E0043CFF6 /* 2048-demo-bg.png */,
+				2FB3C85F24D9021A0043CFF6 /* arrow_left_default.png */,
+				2FB3C85D24D902100043CFF6 /* blocked_view.png */,
+				2FB3C86924D902680043CFF6 /* mountain-dew.jpg */,
+				2FB3C86124D902260043CFF6 /* resume_viewing.mp3 */,
+				2FB3C86724D9025C0043CFF6 /* wraith-ad-audio.mp3 */,
+				2FB3C86D24D9028B0043CFF6 /* wraith-ad-edit-logical.png */,
 			);
 			path = "fifteen-million-merits";
 			sourceTree = "<group>";
@@ -160,15 +160,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				2F1E638D24B3DE7A000499C0 /* LaunchScreen.storyboard in Resources */,
-				2F816C3524BD61FB00F3C19A /* 2048-demo-bg.png in Resources */,
+				2FB3C85E24D902110043CFF6 /* blocked_view.png in Resources */,
+				2FB3C86024D9021A0043CFF6 /* arrow_left_default.png in Resources */,
 				2F1E638A24B3DE7A000499C0 /* Assets.xcassets in Resources */,
-				2F61D4BE24BFF3270071147A /* wraith-ad-audio.mp3 in Resources */,
+				2FB3C86224D902260043CFF6 /* resume_viewing.mp3 in Resources */,
 				2F1E638824B3DE73000499C0 /* Main.storyboard in Resources */,
-				2F85A15824BF607A00DE8FCD /* blocked_view.png in Resources */,
-				2F67865224D7906A0015ABC4 /* arrow_left_default.png in Resources */,
-				2F7427CF24BA8AB100E1A08F /* resume_viewing.mp3 in Resources */,
-				2F816C3324BD5E4100F3C19A /* wraith-ad-edit.png in Resources */,
-				2F85A15924BF607A00DE8FCD /* mountain-dew.jpg in Resources */,
+				2FB3C86C24D9026E0043CFF6 /* 2048-demo-bg.png in Resources */,
+				2FB3C86A24D902680043CFF6 /* mountain-dew.jpg in Resources */,
+				2FB3C86824D9025C0043CFF6 /* wraith-ad-audio.mp3 in Resources */,
+				2FB3C86E24D9028B0043CFF6 /* wraith-ad-edit-logical.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
