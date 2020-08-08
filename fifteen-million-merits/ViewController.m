@@ -47,7 +47,6 @@
     [advertisement setAdImage:[UIImage imageNamed:@"wraith-ad-edit-logical.png"]];  // set the image + autoresize
     [advertisement setAdAudioWithName:@"wraith-ad-audio" andExtenstion:@"mp3"];     // audio to accompany the photo
     
-    //advertisement.techDemo    = YES;
     advertisement.strictness    = 75;       // dystopian settings
     advertisement.ad_duration   = 15;       // 15 seconds is really long for a photo ad, but better for testing purposes
     [self.view addSubview:advertisement];

@@ -29,12 +29,6 @@ your_ad.duration               = 15;                                   // second
 [your_ad startTimer];                                                  // begin watch countdown
 ```
 
-FMMAdvertisingView also has a parameter: (bool)techDemo that can be set which will push labels above the advertisement that display the orientation data both in principal aircraft coordinates and in spherical coordinates with a tilt parameter.
-
-```objective-c
-your_ad.techDemo              = YES;	// should show orientation labels
-```
-
 ![Ad Demo](./repo-resources/app-screens/ad_demo.PNG "Ad Demo")  ![Obstructed Demo](./repo-resources/app-screens/obstructed_demo.PNG "Obstructed Demo")
 
 
