@@ -10,10 +10,10 @@
 #import <CoreMotion/CoreMotion.h>
 
 @interface FMMAdvertisementView (){
-    bool is_paused;                             // is the ad paused ie: is the view obstructed
-    int capture_attempts;                       // retry limit for capturing non-zero accelerometer data
-    int time_remaining;                         // how much advertisement time is remaining
-    bool ad_has_audio;                          // does the advertisement have audio
+    bool    is_paused;                          // is the ad paused ie: is the view obstructed
+    int     capture_attempts;                   // retry limit for capturing non-zero accelerometer data
+    int     time_remaining;                     // how much advertisement time is remaining
+    bool    ad_has_audio;                       // does the advertisement have audio
     
     AVAudioPlayer       *obstructedAudioPlayer; // play a noise (resume_viewing.mp3) whenever view is obstructed
     CMMotionManager     *motionManager;         // capture the accelerometer data
@@ -46,14 +46,16 @@
     if (self){
         self.backgroundColor = [UIColor colorWithWhite:0.05 alpha:0.85];
         
-        adImageView = [[UIImageView alloc] init]; // frame to be resized when image is added.
+        adImageView = [[UIImageView alloc] init];
         [self addSubview:adImageView];
         
-        // Advertisement Variables that are required whether motionManager is available or not
-        [self loadTimerLabel];
-        ad_duration = 10;       // default duration.
+        [self createTimerLabel];    // Always Required
+        ad_duration = 10;           // Always Required
+        strictness          = 50;   // Only Required w/ MotionManager
+        is_paused           = NO;   // Only Required w/ MotionManager
+        capture_attempts    = 0;    // Only Required w/ MotionManager
+        ad_has_audio        = NO;   // Only Required w/ MotionManager
         
-        // Manager for the orientation detection. This takes about 0.2s to initialize so call it earlier than later.
         motionManager = [[CMMotionManager alloc] init];
         if (motionManager.deviceMotionAvailable) {
             motionManager.deviceMotionUpdateInterval = 1.0/70.0;
@@ -63,14 +65,8 @@
             return self; // play a normal ad if there is no orientation detection support
         }
         
-        // Variables / setup that are only required if motionManager is available
-        strictness          = 50;   // default
-        is_paused           = NO;
-        capture_attempts    = 0;
-        ad_has_audio        = NO;
-        
-        [self capture_0];
-        [self loadObstructedView];
+        [self captureInitialOrientation];
+        [self createObstructedView];
         
         // Superloop for checking the orientation of the device and checking the participation of the user
         NSTimer *superloopTimer = [[NSTimer alloc] init];
@@ -83,14 +79,14 @@
     return self;
 }
 
-// Initialization and setup for the timer label that countsdown the remaining mandatory watch time.
-- (void) loadTimerLabel{
+/* Initialization and setup for the timer label that countsdown the remaining mandatory watch time. */
+- (void) createTimerLabel{
     timerLabel = [[UILabel alloc] initWithFrame:CGRectMake(adImageView.frame.size.width-20, 0, 20, 20)];
     timerLabel.backgroundColor      = [UIColor colorWithWhite:0.10 alpha:0.15];
     timerLabel.text                 = [NSString stringWithFormat:@"%d", ad_duration];
     timerLabel.layer.borderColor    = UIColor.blackColor.CGColor;
     timerLabel.layer.borderWidth    = 1;
-    timerLabel.layer.cornerRadius   = 10;
+    timerLabel.layer.cornerRadius   = timerLabel.frame.size.width/2;
     timerLabel.clipsToBounds        = YES;
     timerLabel.font                 = [UIFont systemFontOfSize:12];
     timerLabel.textColor            = UIColor.blackColor;
@@ -98,24 +94,14 @@
     [adImageView addSubview:timerLabel];
 }
 
-// View for when the user is not looking at the view
-- (void) loadObstructedView{
+/* View for when the user is not looking at the view */
+- (void) createObstructedView{
     obstructed_view         = [[UIImageView alloc] initWithFrame:self.bounds];
     obstructed_view.image   = [UIImage imageNamed:@"blocked_view.png"];
     [obstructed_view setHidden:YES];
     [self addSubview:obstructed_view];
     
-    UILabel *resumeLabel = [[UILabel alloc] initWithFrame:CGRectMake(75, 200, self.frame.size.width-150, 80)];
-    resumeLabel.text                = @"RESUME VIEWING";
-    resumeLabel.font                = [UIFont boldSystemFontOfSize:16];
-    resumeLabel.alpha               = 0.85;
-    resumeLabel.clipsToBounds       = YES;
-    resumeLabel.textAlignment       = NSTextAlignmentCenter;
-    resumeLabel.textColor           = UIColor.whiteColor;
-    resumeLabel.layer.cornerRadius  = 10;
-    resumeLabel.layer.borderColor   = [UIColor colorWithWhite:1 alpha:0.75].CGColor;
-    resumeLabel.layer.borderWidth   = 3;
-    resumeLabel.backgroundColor     = [UIColor colorWithRed:1.0 green:0.5 blue:0.66 alpha:0.80];
+    UILabel *resumeLabel = [self createResumeLabel];
     [obstructed_view addSubview:resumeLabel];
     
     arrowTheta = [[UIImageView alloc] initWithFrame:CGRectMake(10, obstructed_view.frame.size.height/2-25, 65, 50)];
@@ -132,18 +118,45 @@
     obstructedAudioPlayer.numberOfLoops = 0;
 }
 
-// Bound the ad_duration minimum and also update the timerLabel immediately. 
-- (void) setAd_duration:(int)value{
-    if (value < 1){
-        ad_duration = 1;
-    } else {
-        ad_duration = value;
-    }
+/* Initialization and settings for the label that directions the user on the obstructed view screen */
+- (UILabel*) createResumeLabel{
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(75, 200, self.frame.size.width-150, 80)];
+    label.text                = @"RESUME VIEWING";
+    label.font                = [UIFont boldSystemFontOfSize:16];
+    label.alpha               = 0.85;
+    label.clipsToBounds       = YES;
+    label.textAlignment       = NSTextAlignmentCenter;
+    label.textColor           = UIColor.whiteColor;
+    label.layer.cornerRadius  = 10;
+    label.layer.borderColor   = [UIColor colorWithWhite:1 alpha:0.75].CGColor;
+    label.layer.borderWidth   = 3;
+    label.backgroundColor     = [UIColor colorWithRed:1.0 green:0.5 blue:0.66 alpha:0.80];
     
+    return label;
+}
+
+/* Create a button to dismiss the add. */
+- (UIButton*) createExitButtonWithFrame:(CGRect)frame{
+    UIButton *btn = [[UIButton alloc] initWithFrame:frame];
+    btn.layer.cornerRadius    = frame.size.width/2;
+    btn.layer.borderWidth     = 0;
+    btn.layer.borderColor     = UIColor.blackColor.CGColor;
+    btn.titleLabel.font       = [UIFont systemFontOfSize:12];
+    btn.backgroundColor       = [UIColor colorWithWhite:0.10 alpha:0.10];
+    [btn setTitle:@"X" forState:UIControlStateNormal];
+    [btn setTitleColor:UIColor.blackColor forState:UIControlStateNormal];
+    [btn addTarget:self action:@selector(terminateAd) forControlEvents:UIControlEventTouchUpInside];
+    
+    return btn;
+}
+
+/* Bound the ad_duration minimum and also update the timerLabel immediately. */
+- (void) setAd_duration:(int)value{
+    ad_duration = (value > 1) ? value : 1;
     timerLabel.text = [NSString stringWithFormat:@"%d", ad_duration];
 }
 
-// If the advertisement is a photo and has accompagnying audio, set that up.
+/* If the advertisement is a photo and has accompagnying audio, set that up. */
 - (void) setAdAudioWithName:(NSString*)name andExtenstion:(NSString*)ext{
     ad_has_audio        = YES;
     NSURL *adAudioUrl   = [[NSBundle mainBundle] URLForResource:name withExtension:ext];
@@ -152,7 +165,7 @@
     adAudioPlayer.numberOfLoops = -1;
 }
 
-// Set the image for the advertisement and rescale the size of the adImageView to the fill the view.
+/* Set the image for the advertisement and rescale the size of the adImageView to the fill the view. */
 - (void) setAdImage:(UIImage*)image{
     adImageView.image = image;
     double coverage_percent = 0.98;
@@ -180,7 +193,7 @@
 
 #pragma mark - Core Accelerometer Methods
 
-// Grab the new headings information, check for the user's participation, and then if it's a tech demo update the labels
+/* Grab the new headings information, check for the user's participation, and then if it's a tech demo update the labels */
 - (void) updateHeadings{
     NSDictionary *headings  = [self extrapolateHeadings:motionManager];
     bool isParticipating    = [self checkUserParticipation:headings];
@@ -189,7 +202,7 @@
     }
 }
 
-// Calculate all the heading information for the six directions and return them as a dictionary.
+/* Calculate all the heading information for the six directions and return them as a dictionary. */
 - (NSDictionary*) extrapolateHeadings:(CMMotionManager*)manager{
     NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
     [dict setObject:[NSNumber numberWithDouble:manager.deviceMotion.attitude.pitch] forKey:@"pitch"];
@@ -197,14 +210,11 @@
     [dict setObject:[NSNumber numberWithDouble:manager.deviceMotion.attitude.yaw] forKey:@"yaw"];
     
     CMRotationMatrix mat = manager.deviceMotion.attitude.rotationMatrix;
-    // http://nghiaho.com/?page_id=846 // info on decomposing rotation matrices
-    //NSLog(@"m11, m12, m13 : %.2f, %.2f, %.2f", mat.m11, mat.m12, mat.m13);
-    //NSLog(@"m21, m22, m23 : %.2f, %.2f, %.2f", mat.m21, mat.m22, mat.m23);
-    //NSLog(@"m31, m32, m33 : %.2f, %.2f, %.2f", mat.m31, mat.m32, mat.m33);
+    // http://nghiaho.com/?page_id=846 (info on decomposing rotation matrices)
     
-    double Sx = atan2(mat.m32, mat.m33);                                        // Phi
-    double Sy = atan2(-mat.m31, sqrt(mat.m32*mat.m32 + mat.m33*mat.m33));       // Theta
-    double Sz = atan2(mat.m21, mat.m11);                                        // Tilt
+    double Sx = atan2(mat.m32, mat.m33);                                        // Phi   [rad]
+    double Sy = atan2(-mat.m31, sqrt(mat.m32*mat.m32 + mat.m33*mat.m33));       // Theta [rad]
+    double Sz = atan2(mat.m21, mat.m11);                                        // Tilt  [rad]
     
     [dict setObject:[NSNumber numberWithDouble:(Sx*180/M_PI)] forKey:@"phi"];
     [dict setObject:[NSNumber numberWithDouble:(Sy*180/M_PI)] forKey:@"theta"];
@@ -213,8 +223,8 @@
     return dict;
 }
 
-// Store the initial values for the orientation when the advertisement starts playing.
-- (void) capture_0{
+/* Store the initial values for the orientation when the advertisement starts playing. */
+- (void) captureInitialOrientation{
     NSDictionary *headingDict = [self extrapolateHeadings:motionManager];
     
     phi_0   = [[headingDict objectForKey:@"phi"] doubleValue];
@@ -233,25 +243,24 @@
             return;
         }
         [NSThread sleepForTimeInterval:0.1f];
-        [self capture_0];
+        [self captureInitialOrientation];
         return;
     }
     NSLog(@"Successful Capture Of Initial Orientation.");
 }
 
-// Check whether the user is still looking at the screen
+/* Check whether the user is still looking at the screen */
 - (bool) checkUserParticipation:(NSDictionary*)currentHeadings{
-    // the lower bounds are a little bit too firm still.
-    double thetaLimit   = 60 - 40.0*strictness/100;     // bound between 20 and 60. default = 40
-    double phiLimit     = 45 - 30*strictness/100;       // bound between 15 and 45. default = 30
-    
-    is_paused = NO;
     
     // If the user has watched all the mandatory ad then their participation is no longer required.
     if (!time_remaining){
         [obstructed_view setHidden:YES];
         return YES;
     }
+    
+    double thetaLimit   = 60 - 40.0*strictness/100;     // bound between 20 and 60. default = 40
+    double phiLimit     = 45 - 30*strictness/100;       // bound between 15 and 45. default = 30
+    is_paused = NO; // Assume user watching then check each condition to confirm
     
     if (fabs([[currentHeadings objectForKey:@"phi"] doubleValue] - phi_0) > phiLimit){
         NSLog(@"Maximum Phi Exceeded: phi_0: %.2f°  || phi: %.2f°", phi_0, [[currentHeadings objectForKey:@"phi"] doubleValue]);
@@ -287,7 +296,7 @@
         [arrowTheta setHidden:YES];
     }
     
-    if (is_paused){ // move out here so that both arrows can be visible
+    if (is_paused){
         return NO;
     }
     
@@ -304,7 +313,7 @@
 
 #pragma mark - Core (Non-Accelerometer) Methods
 
-// Play the view obstructed obnoxious high pitched sound w/ "Resume Viewing" in the background
+/* Play the view obstructed obnoxious high pitched sound w/ "Resume Viewing" in the background */
 - (void) playSound{
     if (!obstructedAudioPlayer.isPlaying){
         [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback error: nil]; // play on silent.
@@ -313,7 +322,7 @@
     }
 }
 
-// Begin the ad timer countdown.
+/* Begin the ad timer countdown. */
 - (void) startTimer{
     time_remaining = ad_duration;
     if (ad_has_audio){
@@ -328,41 +337,31 @@
                                                      repeats:YES];
 }
 
-// After mandatory watch period allow the user to kill the ad.
+/* If the user has been watching the ad, remove one second from the countdown. */
 - (void)countdown:(NSTimer*)sender{
     if (!is_paused){
         time_remaining --;
         timerLabel.text = [NSString stringWithFormat:@"%d", time_remaining];
     }
         
-    NSLog(@"Advertisement Time Remaining: %ds", time_remaining);
-    
     if (time_remaining <= 0){
         [sender invalidate];
-        [timerLabel removeFromSuperview];
         
-        UIButton *endButton             = [[UIButton alloc] initWithFrame:timerLabel.frame];
-        endButton.layer.cornerRadius    = timerLabel.layer.cornerRadius;
-        endButton.layer.borderWidth     = 0;//timerLabel.layer.borderWidth;
-        endButton.layer.borderColor     = UIColor.blackColor.CGColor;
-        endButton.titleLabel.font       = [UIFont systemFontOfSize:12];
-        endButton.backgroundColor       = [UIColor colorWithWhite:0.10 alpha:0.10];
-        [endButton setTitle:@"X" forState:UIControlStateNormal];
-        [endButton setTitleColor:UIColor.blackColor forState:UIControlStateNormal];
-        [endButton addTarget:self action:@selector(terminateAd) forControlEvents:UIControlEventTouchUpInside];
+        UIButton *exitButton = [self createExitButtonWithFrame:timerLabel.frame];
         [adImageView setUserInteractionEnabled:YES];
-        [adImageView addSubview:endButton];
+        [adImageView addSubview:exitButton];
+        [timerLabel removeFromSuperview];
     }
 }
 
-// Close the advertisement.
+/* Close the advertisement. */
 - (void)terminateAd{
     NSLog(@"Terminating Advertisement");
     [adAudioPlayer stop];
     [self removeFromSuperview];
 }
 
-// Set the strictness but bound it from 0-100.
+/* Set the strictness but bound it from 0-100. */
 - (void) setStrictness:(double)value{
     if (value < 0){
         strictness = 0;
