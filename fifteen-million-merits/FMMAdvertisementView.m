@@ -104,12 +104,12 @@
     UILabel *resumeLabel = [self createResumeLabel];
     [obstructed_view addSubview:resumeLabel];
     
-    arrowTheta = [[UIImageView alloc] initWithFrame:CGRectMake(10, obstructed_view.frame.size.height/2-25, 65, 50)];
-    arrowTheta.image = [UIImage imageNamed:@"arrow_left_default"];
+    arrowTheta = [[UIImageView alloc] initWithFrame:CGRectMake(10, obstructed_view.frame.size.height/2-25, 50, 50)];
+    arrowTheta.image = [UIImage imageNamed:@"arrow-left-default-2.png"];
     [obstructed_view addSubview:arrowTheta];
     
-    arrowPhi = [[UIImageView alloc] initWithFrame:CGRectMake(obstructed_view.frame.size.width/2 - 32, 20, 65, 50)];
-    arrowPhi.image = [UIImage imageNamed:@"arrow_left_default"];
+    arrowPhi = [[UIImageView alloc] initWithFrame:CGRectMake(obstructed_view.frame.size.width/2 - 25, 20, 50, 50)];
+    arrowPhi.image = [UIImage imageNamed:@"arrow-left-default-2.png"];
     [obstructed_view addSubview:arrowPhi];
     
     // Setup the obstructed view audio.
